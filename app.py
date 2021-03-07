@@ -1,7 +1,7 @@
 import os
 import secrets
-from greenhouse import GreenhouseClient
-from slack import SlackClient
+from greenhouse_client import GreenhouseClient
+from slack_client import SlackClient
 
 # Set env variables for API tokens.
 secrets.set_tokens()
