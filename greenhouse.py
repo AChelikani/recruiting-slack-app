@@ -20,7 +20,7 @@ class GreenhouseClient:
         
         return r.json()
 
-    def get_applications(self):
+    def get_applications(self, last_activity_at):
         applications = []
         url = self.base_url + "applications"
         r = requests.get(url, auth=(self.token, ""))
