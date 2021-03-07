@@ -1,16 +1,15 @@
 import os
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
 import secrets
+from greenhouse import GreenhouseClient
+from slack import SlackClient
 
-secrets.set_token()
+# Set env variables for API tokens.
+secrets.set_tokens()
 
-client = WebClient(token=os.environ['SLACK_BOT_TOKEN'])
+slack_client = SlackClient(token=os.environ['SLACK_BOT_TOKEN'])
+greenhouse_client = GreenhouseClient(token=os.environ['GREENHOUSE_SANDBOX_API_TOKEN'])
 
-try:
-    response = client.chat_postMessage(channel='#random', text="Hello world!")
-    assert response["message"]["text"] == "Hello world!"
-except SlackApiError as e:
-    # You will get a SlackApiError if "ok" is False
-    assert e.response["ok"] is False
-    assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
+if __name__ == "__main__":
+    # slack_client.create_private_channel("onsite-bob-jones-2")
+    print(greenhouse_client.get_job_stages())
+    # greenhouse_client.get_applications()
