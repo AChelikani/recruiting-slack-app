@@ -3,7 +3,7 @@ import requests
 class GreenhouseClient:
     def __init__(self, token):
         self.token = token
-        self.base_url = "https://harvest.greenhouse.io/v1/"
+        self.base_url = "https://harvest.greenhouse.io/v1"
 
     def _print_response(self, resp):
         if resp.status_code >= 400:
@@ -12,7 +12,7 @@ class GreenhouseClient:
             print(resp.json())
 
     def get_job_stages(self):
-        url = self.base_url + "job_stages"
+        url = "{}/job_stages".format(self.base_url)
         r = requests.get(url, auth=(self.token, ""))
         if r.status_code >= 400:
             print(r.text)
@@ -20,9 +20,14 @@ class GreenhouseClient:
         
         return r.json()
 
-    def get_applications(self, last_activity_at):
+    def get_applications(self, last_activity_after):
+        '''
+        Fetch applications that have been updated since the last_activity_after timestamp.
+
+        Expected usage: Called each day to determine applications that may require actions. 
+        '''
         applications = []
-        url = self.base_url + "applications"
+        url = "{}/applications?last_activity_after={}".format(self.base_url, last_activity_after)
         r = requests.get(url, auth=(self.token, ""))
         if r.status_code >= 400:
             print(r.text)
@@ -35,7 +40,7 @@ class GreenhouseClient:
         return r.json()
 
     def get_scorecards_for_application(self, application_id):
-        url = self.base_url + "applications/{}/scorecards".format(application_id)
+        url = "{}/applications/{}/scorecards".format(self.base_url, application_id)
         r = requests.get(url, auth=(self.token, ""))
         if r.status_code >= 400:
             print(r.text)
