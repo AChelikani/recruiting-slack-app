@@ -11,8 +11,8 @@ class GreenhouseClient:
         else:
             print(resp.json())
 
-    def get_job_stages(self):
-        url = "{}/job_stages".format(self.base_url)
+    def get_job_stage(self, id):
+        url = "{}/job_stages/{}".format(self.base_url, id)
         r = requests.get(url, auth=(self.token, ""))
         if r.status_code >= 400:
             print(r.text)

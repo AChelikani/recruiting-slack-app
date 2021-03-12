@@ -33,15 +33,15 @@ def get_recruiter_and_coordinator_ids(candidate):
     return ids
 
 
-def get_interviewer_ids(interviews):
+def get_interviewer_ids(interviews, onsite_interview_ids):
     # Should only fetch interviews for the onsite interview.
     ids = []
     for interview in interviews:
         is_scheduled = interview["status"] == "scheduled"
 
-        # TODO: Fetch interviews for this job stage and match on interview["interview"]["id"].
-        # This is to make sure that only those scheduled for interviews that are part of the 
-        # onsite stage are invited to the channel.
+        if interview["interview"]["id"] not in onsite_interview_ids:
+            continue
+
         if is_scheduled:
             for interviewer in interview["interviewers"]:
                 ids.append(interviewer["id"])
@@ -54,3 +54,15 @@ def combine_gh_ids(arr1, arr2):
     for item in arr2:
         dedup.add(item)
     return list(dedup)
+
+def get_interview_kits_from_job_stage(job_stage):
+    interview_id_to_interview_kit_id = {}
+    for interview in job_stage["interviews"]:
+        interview_id_to_interview_kit_id[interview["id"]] = interview["interview_kit"]["id"]
+    
+    return interview_id_to_interview_kit_id
+
+
+def construct_interview_kit_url(url_prefix, interview_kit_id, candidate_id, application_id):
+    url = "https://{}.greenhouse.io/guides/{}/people/{}?application_id={}".format(url_prefix, interview_kit_id, candidate_id, application_id)
+    return url
