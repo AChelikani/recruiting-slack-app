@@ -13,9 +13,17 @@ class SlackClient:
             print(e.response["error"])
             return None
 
+    def post_message_to_channel(self, channel, blocks, fallback_text):
+        try:
+            resp = self.slack_client.chat_postMessage(channel=channel, blocks=blocks, text=fallback_text)
+            return resp["ok"]
+        except SlackApiError as e:
+            print(e.response["error"])
+            return None
+
     def invite_users_to_channel(self, channel, users):
         try:
-            self.slack_client.conversations_invite(channel=channel)
+            self.slack_client.conversations_invite(channel=channel, users=users)
         except SlackApiError as e:
             print(e.response["error"])
             return None

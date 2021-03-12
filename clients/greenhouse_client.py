@@ -16,7 +16,7 @@ class GreenhouseClient:
         r = requests.get(url, auth=(self.token, ""))
         if r.status_code >= 400:
             print(r.text)
-            return
+            return None
         
         return r.json()
 
@@ -31,12 +31,38 @@ class GreenhouseClient:
         r = requests.get(url, auth=(self.token, ""))
         if r.status_code >= 400:
             print(r.text)
-            return
+            return None
 
         # TODO: Page through all applications.
+        return r.json()
 
-        print(r.json())
-        print(r.headers)
+    def get_scheduled_interviews(self, application_id):
+        url = "{}/applications/{}/scheduled_interviews".format(self.base_url, application_id)
+        r = requests.get(url, auth=(self.token, ""))
+        if r.status_code >= 400:
+            print(r.text)
+            return None
+        
+        return r.json()
+
+    def get_candidate(self, id):
+        url = "{}/candidates/{}".format(self.base_url, id)
+        r = requests.get(url, auth=(self.token, ""))
+        if r.status_code >= 400:
+            print(r.text)
+            return None
+        
+        return r.json()
+
+    def get_users(self):
+        users = []
+        url = "{}/users".format(self.base_url)
+        r = requests.get(url, auth=(self.token, ""))
+        if r.status_code >= 400:
+            print(r.text)
+            return None
+        
+        # TODO: Paginate through all users
         return r.json()
 
     def get_scorecards_for_application(self, application_id):
@@ -44,7 +70,7 @@ class GreenhouseClient:
         r = requests.get(url, auth=(self.token, ""))
         if r.status_code >= 400:
             print(r.text)
-            return
+            return None
 
         return r.json()
 

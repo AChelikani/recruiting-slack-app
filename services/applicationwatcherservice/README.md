@@ -14,5 +14,5 @@ If a candidate has received an offer since the last time the job has run:
 - (Optional) Post candidates email and encourage interviewers to send congradulatory note.
 
 
-If a candidate accepts the offer, declines the offer, or is rejected after onsite since the last time the job has run:g
+If a candidate accepts the offer, declines the offer, or is rejected after onsite since the last time the job has run:
 - Archive the channel.

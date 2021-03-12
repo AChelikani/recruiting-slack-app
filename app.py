@@ -11,5 +11,5 @@ greenhouse_client = GreenhouseClient(token=os.environ['GREENHOUSE_SANDBOX_API_TO
 
 if __name__ == "__main__":
     # slack_client.create_private_channel("onsite-bob-jones-2")
-    print(greenhouse_client.get_job_stages())
-    # greenhouse_client.get_applications()
+    # print(greenhouse_client.get_job_stages())
+    greenhouse_client.get_applications("2021-01-01T13:00:28.038Z")
