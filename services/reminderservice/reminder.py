@@ -13,7 +13,7 @@ class Reminder():
         # Within the queue:
         #   - At the time of their SLA breach, pull scorecards of that application ID.
         #   - If scorecard for specified interview is not filled out, send reminder.
-        #       - Enqueue reminder again 
+        #       - Enqueue reminder again for next SLA breach. 
 
 
         pass

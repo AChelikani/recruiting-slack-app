@@ -194,11 +194,3 @@ class ApplicationWatcher():
             slack_client = SlackClient(config.slack_token)
 
             self._poll_applications(config, timestamp, greenhouse_client, slack_client)
-
-
-
-if __name__ == "__main__":
-    config = [SamsaraTest]
-    ap = ApplicationWatcher(config)
-    ap.run("2021-03-11T00:00:00.000Z")
-        
