@@ -76,7 +76,8 @@ class ApplicationWatcher():
         onsite_interview_ids = interview_id_to_interview_kit_id.keys()
 
         # Create new onsite channel for candidate.
-        channel_name = slackutils.generate_new_onsite_channel_name(candidate["first_name"], candidate["last_name"])
+        interview_date = ghutils.get_interview_date_from_scheduled_interviews(interviews)
+        channel_name = slackutils.generate_new_onsite_channel_name(candidate["first_name"], candidate["last_name"], interview_date)
         channel_id = slack_client.create_private_channel(channel_name)
 
         # Invite participants to channel.
@@ -153,11 +154,12 @@ class ApplicationWatcher():
 
             interview_name = interview["interview"]["name"]
             start_time = interview["start"]["date_time"]
+            _, month, day, _, _ = utils.parse_time(start_time)
             
             interview_kit_id = interview_id_to_interview_kit_id[interview["interview"]["id"]]
             interview_kit_url = ghutils.construct_interview_kit_url(config.greenhouse_url_prefix, interview_kit_id, candidate["id"], application["id"])
 
-            display_time = utils.format_time(start_time)
+            display_time = "{}/{} {}".format(month, day, utils.format_time(start_time))
             display_interviewers = " & ".join(interviewers)
             interview_text = ":{}: {}{} |  {}  |  {}".format(NUMBER_TO_WORD[interview_counter], display_time, " " * (7 - len(display_time)), interview_name, display_interviewers)
 

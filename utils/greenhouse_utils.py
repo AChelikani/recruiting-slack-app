@@ -1,3 +1,5 @@
+from utils.utils import parse_time
+
 def is_onsite(job_stage):
     ''' 
     Determines if a job_stage is an onsite interview.
@@ -66,3 +68,14 @@ def get_interview_kits_from_job_stage(job_stage):
 def construct_interview_kit_url(url_prefix, interview_kit_id, candidate_id, application_id):
     url = "https://{}.greenhouse.io/guides/{}/people/{}?application_id={}".format(url_prefix, interview_kit_id, candidate_id, application_id)
     return url
+
+def get_interview_date_from_scheduled_interviews(interviews):
+    date = "3021-01-01T00:00:00.000Z"
+    
+    for interview in interviews:
+        if interview["start"]["date_time"] < date:
+            date = interview["start"]["date_time"]
+
+     _, month, day, _, _ = parse_time(date)
+
+     return "{}-{}".format(month, day)
