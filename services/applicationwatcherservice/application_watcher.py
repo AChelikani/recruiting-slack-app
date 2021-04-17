@@ -116,7 +116,7 @@ class ApplicationWatcher():
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": ":wave: Thank you for helping to make Samsara a better place to work.\n\n Recruiter: *{}*\n Coordinator: *{}*".format(candidate["recruiter"]["name"], candidate["coordinator"]["name"])
+                    "text": config.intro_msg + "\n\n Recruiter: *{}*\n Coordinator: *{}*".format(candidate["recruiter"]["name"], candidate["coordinator"]["name"])
                 }
             },
             {
