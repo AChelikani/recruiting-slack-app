@@ -69,13 +69,13 @@ def construct_interview_kit_url(url_prefix, interview_kit_id, candidate_id, appl
     url = "https://{}.greenhouse.io/guides/{}/people/{}?application_id={}".format(url_prefix, interview_kit_id, candidate_id, application_id)
     return url
 
-def get_interview_date_from_scheduled_interviews(interviews):
+def get_interview_date_from_scheduled_interviews(interviews, timezone):
     date = "3021-01-01T00:00:00.000Z"
     
     for interview in interviews:
         if interview["start"]["date_time"] < date:
             date = interview["start"]["date_time"]
 
-     _, month, day, _, _ = parse_time(date)
+    _, month, day, _, _ = parse_time(date, timezone)
 
-     return "{}-{}".format(month, day)
+    return "{}-{}".format(month, day)

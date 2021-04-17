@@ -16,4 +16,4 @@ if __name__ == "__main__":
     # greenhouse_client.get_applications("2021-01-01T13:00:28.038Z")
     config = [SamsaraTest]
     ap = ApplicationWatcher(config)
-    ap.run("2021-04-14T00:00:00.000Z")
+    ap.run("2021-04-16T00:00:00.000Z")
