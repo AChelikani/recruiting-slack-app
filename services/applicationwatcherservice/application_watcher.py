@@ -104,12 +104,16 @@ class ApplicationWatcher():
             if attachment["type"] == "resume":
                 resume_url = attachment["url"]
 
+        candidate_phone = ghutils.get_candidate_phone(candidate)
+        candidate_email = ghutils.get_candidate_email(candidate)
+        job = ghutils.get_job_from_application(application)
+
         blocks = [
             {
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": "Interview for {} {}".format(candidate["first_name"], candidate["last_name"]),
+                    "text": "Interview {} {} for {}".format(candidate["first_name"], candidate["last_name"], job),
                     "emoji": True
                 }
             },
@@ -117,7 +121,7 @@ class ApplicationWatcher():
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": config.intro_msg + "\n\n Recruiter: *{}*\n Coordinator: *{}*".format(candidate["recruiter"]["name"], candidate["coordinator"]["name"])
+                    "text": config.intro_msg + "\n\n Recruiter: *{}*\n Coordinator: *{}*\n\n Candidate contact: {} or {}".format(candidate["recruiter"]["name"], candidate["coordinator"]["name"], candidate_email, candidate_phone)
                 }
             },
             {

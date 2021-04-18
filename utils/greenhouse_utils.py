@@ -79,3 +79,32 @@ def get_interview_date_from_scheduled_interviews(interviews, timezone):
     _, month, day, _, _ = parse_time(date, timezone)
 
     return "{}-{}".format(month, day)
+
+
+def get_candidate_phone(candidate):
+    # Choose first phone number unless mobile number is present.
+    phone = None
+    for phone_number in candidate["phone_numbers"]:
+        if not phone:
+            phone = phone_number["value"]
+        if phone_number["type"] == "mobile":
+            phone = phone_number["value"]
+
+    return phone
+
+def get_candidate_email(candidate):
+    # Choose first email unless personal email is present.
+    email = None
+    for email_address in candidate["email_addresses"]:
+        if not email:
+            email = email_address["value"]
+        if email_address["type"] == "personal":
+            email = email_address["value"]
+    
+    return email
+
+def get_job_from_application(application):
+    # Candidate applications have exactly 1 job.
+    job = application["jobs"][0]["name"]
+    return job
+    
