@@ -28,22 +28,30 @@ def application_is_onsite(application):
         return False
 
 
-def onsite_is_tomorrow(interviews, timestamp, timezone):
-    scheduled_interviews = [
-        interview for interview in interviews if interview["status"] == "scheduled"
+def get_onsite_interviews(job_stage, interviews):
+    interview_type_ids = [interview["id"] for interview in job_stage["interviews"]]
+    return [
+        interview
+        for interview in interviews
+        if interview["interview"]["id"] in interview_type_ids
     ]
 
-    if len(scheduled_interviews) == 0:
+
+def onsite_is_tomorrow(job_stage, interviews, timestamp):
+    onsite_interviews = get_onsite_interviews(job_stage, interviews)
+
+    if len(onsite_interviews) == 0:
         return False
 
-    upcoming_interview_date = get_earliest_interview_datetime(scheduled_interviews)
-    upcoming_interview_date = dateutil.parser.isoparse(upcoming_interview_date)
+    onsite_first_interview_date = get_earliest_interview_datetime(onsite_interviews)
+    onsite_first_interview_date = dateutil.parser.isoparse(onsite_first_interview_date)
 
     target_date = dateutil.parser.isoparse(timestamp)
     one_day_after_target_date = target_date + datetime.timedelta(days=1)
 
     return (
-        upcoming_interview_date.date().isoformat()
+        target_date.date().isoformat() < onsite_first_interview_date.date().isoformat()
+        and onsite_first_interview_date.date().isoformat()
         <= one_day_after_target_date.date().isoformat()
     )
 
@@ -114,8 +122,11 @@ def get_earliest_interview_datetime(interviews):
     return date
 
 
-def get_interview_date_from_scheduled_interviews(interviews, timezone):
-    date = get_earliest_interview_datetime(interviews)
+def get_first_onsite_interview_date_from_scheduled_interviews(
+    job_stage, interviews, timezone
+):
+    onsite_interviews = get_onsite_interviews(job_stage, interviews)
+    date = get_earliest_interview_datetime(onsite_interviews)
 
     _, month, day, _, _ = parse_time(date, timezone)
 

@@ -67,11 +67,16 @@ class ApplicationWatcher:
                 # Get more information about scheduled interviews.
                 interviews = gh_client.get_scheduled_interviews(app["id"])
 
-                if ghutils.onsite_is_tomorrow(interviews, timestamp, config.timezone):
+                # Get more information about interview kits.
+                job_stage_id = app["current_stage"]["id"]
+                job_stage = gh_client.get_job_stage(job_stage_id)
+
+                if ghutils.onsite_is_tomorrow(job_stage, interviews, timestamp):
                     self._handle_new_onsite(
                         config,
                         app,
                         interviews,
+                        job_stage,
                         gh_user_id_to_email_map,
                         gh_client,
                         slack_client,
@@ -84,6 +89,7 @@ class ApplicationWatcher:
         config,
         application,
         interviews,
+        job_stage,
         gh_user_id_to_email_map,
         gh_client: GreenhouseClient,
         slack_client: SlackClient,
@@ -93,17 +99,16 @@ class ApplicationWatcher:
         if candidate is None:
             return None
 
-        # Get more information about interview kits.
-        job_stage_id = application["current_stage"]["id"]
-        job_stage = gh_client.get_job_stage(job_stage_id)
         interview_id_to_interview_kit_id = ghutils.get_interview_kits_from_job_stage(
             job_stage
         )
         onsite_interview_ids = interview_id_to_interview_kit_id.keys()
 
         # Create new onsite channel for candidate.
-        interview_date = ghutils.get_interview_date_from_scheduled_interviews(
-            interviews, config.timezone
+        interview_date = (
+            ghutils.get_first_onsite_interview_date_from_scheduled_interviews(
+                job_stage, interviews, config.timezone
+            )
         )
         channel_name = slackutils.generate_new_onsite_channel_name(
             candidate["first_name"], candidate["last_name"], interview_date
