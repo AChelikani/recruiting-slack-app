@@ -203,6 +203,7 @@ class ApplicationWatcher:
 
             interview_name = interview["interview"]["name"]
             start_time = interview["start"]["date_time"]
+            end_time = interview["end"]["date_time"]
             _, month, day, _, _ = utils.parse_time(start_time, self.config.timezone)
 
             interview_kit_id = interview_id_to_interview_kit_id[
@@ -215,8 +216,11 @@ class ApplicationWatcher:
                 application["id"],
             )
 
-            display_time = "{}/{} {}".format(
-                month, day, utils.format_time(start_time, self.config.timezone)
+            display_time = "{}/{} {}-{}".format(
+                month,
+                day,
+                utils.format_time(start_time, self.config.timezone),
+                utils.format_time(end_time, self.config.timezone),
             )
             display_interviewers = " & ".join(interviewers)
             interview_text = ":{}: {}{} |  {}  |  {}".format(
