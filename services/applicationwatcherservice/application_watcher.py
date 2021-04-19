@@ -1,7 +1,5 @@
 from clients.greenhouse_client import GreenhouseClient
 from clients.slack_client import SlackClient
-from config.config import Config
-from config.samsara_test import SamsaraTest
 import utils.greenhouse_utils as ghutils
 import utils.slack_utils as slackutils
 import utils.utils as utils
@@ -38,64 +36,54 @@ class ApplicationWatcher:
     - Archive channel.
     """
 
-    def __init__(self, configs):
-        self.configs = configs
+    def __init__(self, config):
+        self.config = config
+        self.gh_client = GreenhouseClient(config.greenhouse_token)
+        self.slack_client = SlackClient(config.slack_token)
 
-    def _generate_gh_user_id_to_email_map(self, gh_client: GreenhouseClient):
+    def _generate_gh_user_id_to_email_map(self):
         user_id_to_email = {}
-        users = gh_client.get_users()
+        users = self.gh_client.get_users()
 
         for user in users:
             user_id_to_email[user["id"]] = user["primary_email_address"]
 
         return user_id_to_email
 
-    def _poll_applications(
-        self,
-        config,
-        timestamp,
-        gh_client: GreenhouseClient,
-        slack_client: SlackClient,
-    ):
+    def _poll_applications(self, timestamp):
         # Get all applications with updates since the last run.
-        apps = gh_client.get_applications(timestamp)
-        gh_user_id_to_email_map = self._generate_gh_user_id_to_email_map(gh_client)
+        apps = self.gh_client.get_applications(timestamp)
+        gh_user_id_to_email_map = self._generate_gh_user_id_to_email_map()
 
         for app in apps:
             # Handle a candidate moving into the onsite stage.
             if ghutils.application_is_onsite(app):
                 # Get more information about scheduled interviews.
-                interviews = gh_client.get_scheduled_interviews(app["id"])
+                interviews = self.gh_client.get_scheduled_interviews(app["id"])
 
                 # Get more information about interview kits.
                 job_stage_id = app["current_stage"]["id"]
-                job_stage = gh_client.get_job_stage(job_stage_id)
+                job_stage = self.gh_client.get_job_stage(job_stage_id)
 
                 if ghutils.onsite_is_tomorrow(job_stage, interviews, timestamp):
                     self._handle_new_onsite(
-                        config,
                         app,
                         interviews,
                         job_stage,
                         gh_user_id_to_email_map,
-                        gh_client,
-                        slack_client,
                     )
 
         return
 
     def _handle_new_onsite(
         self,
-        config,
         application,
         interviews,
         job_stage,
         gh_user_id_to_email_map,
-        gh_client: GreenhouseClient,
-        slack_client: SlackClient,
     ):
         # Get more information about the candidate.
-        candidate = gh_client.get_candidate(application["candidate_id"])
+        candidate = self.gh_client.get_candidate(application["candidate_id"])
         if candidate is None:
             return None
 
@@ -107,13 +95,13 @@ class ApplicationWatcher:
         # Create new onsite channel for candidate.
         interview_date = (
             ghutils.get_first_onsite_interview_date_from_scheduled_interviews(
-                job_stage, interviews, config.timezone
+                job_stage, interviews, self.config.timezone
             )
         )
         channel_name = slackutils.generate_new_onsite_channel_name(
             candidate["first_name"], candidate["last_name"], interview_date
         )
-        channel_id = slack_client.create_private_channel(channel_name)
+        channel_id = self.slack_client.create_private_channel(channel_name)
 
         # Invite participants to channel.
         gh_recruiter_ids = ghutils.get_recruiter_and_coordinator_ids(candidate)
@@ -124,29 +112,27 @@ class ApplicationWatcher:
 
         for gh_id in ghutils.combine_gh_ids(gh_recruiter_ids, gh_interviwers_ids):
             email = gh_user_id_to_email_map[gh_id]
-            slack_id = slack_client.lookup_user_by_email(email)
+            slack_id = self.slack_client.lookup_user_by_email(email)
             if slack_id:
                 slack_user_ids.append(slack_id)
 
-        slack_client.invite_users_to_channel(channel_id, slack_user_ids)
+        self.slack_client.invite_users_to_channel(channel_id, slack_user_ids)
 
         # Post introduction message into channel.
         blocks = self._construct_intro_message(
-            config,
             candidate,
             interviews,
             application,
             interview_id_to_interview_kit_id,
             onsite_interview_ids,
         )
-        slack_client.post_message_to_channel(
+        self.slack_client.post_message_to_channel(
             channel_id, blocks, "Unable to post message"
         )
         return
 
     def _construct_intro_message(
         self,
-        config,
         candidate,
         interviews,
         application,
@@ -176,7 +162,7 @@ class ApplicationWatcher:
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": config.intro_msg
+                    "text": self.config.intro_msg
                     + "\n\n Recruiter: *{}*\n Coordinator: *{}*\n\n Candidate contact: {}".format(
                         candidate["recruiter"]["name"],
                         candidate["coordinator"]["name"],
@@ -212,20 +198,20 @@ class ApplicationWatcher:
 
             interview_name = interview["interview"]["name"]
             start_time = interview["start"]["date_time"]
-            _, month, day, _, _ = utils.parse_time(start_time, config.timezone)
+            _, month, day, _, _ = utils.parse_time(start_time, self.config.timezone)
 
             interview_kit_id = interview_id_to_interview_kit_id[
                 interview["interview"]["id"]
             ]
             interview_kit_url = ghutils.construct_interview_kit_url(
-                config.greenhouse_url_prefix,
+                self.config.greenhouse_url_prefix,
                 interview_kit_id,
                 candidate["id"],
                 application["id"],
             )
 
             display_time = "{}/{} {}".format(
-                month, day, utils.format_time(start_time, config.timezone)
+                month, day, utils.format_time(start_time, self.config.timezone)
             )
             display_interviewers = " & ".join(interviewers)
             interview_text = ":{}: {}{} |  {}  |  {}".format(
@@ -262,8 +248,4 @@ class ApplicationWatcher:
         return blocks
 
     def run(self, timestamp):
-        for config in self.configs:
-            greenhouse_client = GreenhouseClient(config.greenhouse_token)
-            slack_client = SlackClient(config.slack_token)
-
-            self._poll_applications(config, timestamp, greenhouse_client, slack_client)
+        self._poll_applications(timestamp)
