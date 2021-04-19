@@ -144,13 +144,38 @@ class ApplicationWatcher:
         interview_id_to_interview_kit_id,
         onsite_interview_ids,
     ):
-        resume_url = ""
-        for attachment in application["attachments"]:
-            if attachment["type"] == "resume":
-                resume_url = attachment["url"]
 
         candidate_contact = ghutils.get_candidate_contact(candidate)
         job = ghutils.get_job_from_application(application)
+
+        # Populate buttons.
+        action_elements = []
+
+        resume_url = ghutils.get_application_resume(application)
+
+        if resume_url:
+            action_elements.append(
+                {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "Resume", "emoji": True},
+                    "url": resume_url,
+                    "value": "click_me_1",
+                    "action_id": "actionId-1",
+                }
+            )
+
+        linkedin_url = ghutils.get_candidate_linkedin(candidate)
+
+        if linkedin_url:
+            action_elements.append(
+                {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "LinkedIn", "emoji": True},
+                    "url": linkedin_url,
+                    "value": "click_me_2",
+                    "action_id": "actionId-2",
+                }
+            )
 
         blocks = [
             {
@@ -177,15 +202,7 @@ class ApplicationWatcher:
             },
             {
                 "type": "actions",
-                "elements": [
-                    {
-                        "type": "button",
-                        "text": {"type": "plain_text", "text": "Resume", "emoji": True},
-                        "url": resume_url,
-                        "value": "click_me_123",
-                        "action_id": "actionId-1",
-                    }
-                ],
+                "elements": action_elements,
             },
             {"type": "divider"},
         ]

@@ -144,7 +144,7 @@ def get_candidate_contact(candidate):
     elif email:
         return email
     else:
-        return "No contact info found."
+        return "No contact info found for candidate."
 
 
 def get_candidate_phone(candidate):
@@ -169,6 +169,29 @@ def get_candidate_email(candidate):
             email = email_address["value"]
 
     return email
+
+
+def get_candidate_linkedin(candidate):
+    # NOTE: Greenhouse does not store an explicitly labeled LinkedIn URL field.
+    # To find it, we look through the social media URLs and website URLs for a LinkedIn style URL.
+    social_media_addresses = candidate["social_media_addresses"]
+    website_addresses = candidate["website_addresses"]
+
+    all_urls = [item["value"] for item in social_media_addresses + website_addresses]
+    for url in all_urls:
+        if "linkedin.com" in url:
+            return url
+
+    return None
+
+
+def get_application_resume(application):
+    resume_url = None
+    for attachment in application["attachments"]:
+        if attachment["type"] == "resume":
+            resume_url = attachment["url"]
+
+    return resume_url
 
 
 def get_job_from_application(application):
