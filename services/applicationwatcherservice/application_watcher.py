@@ -153,8 +153,7 @@ class ApplicationWatcher:
             if attachment["type"] == "resume":
                 resume_url = attachment["url"]
 
-        candidate_phone = ghutils.get_candidate_phone(candidate)
-        candidate_email = ghutils.get_candidate_email(candidate)
+        candidate_contact = ghutils.get_candidate_contact(candidate)
         job = ghutils.get_job_from_application(application)
 
         blocks = [
@@ -173,11 +172,10 @@ class ApplicationWatcher:
                 "text": {
                     "type": "mrkdwn",
                     "text": config.intro_msg
-                    + "\n\n Recruiter: *{}*\n Coordinator: *{}*\n\n Candidate contact: {} or {}".format(
+                    + "\n\n Recruiter: *{}*\n Coordinator: *{}*\n\n Candidate contact: {}".format(
                         candidate["recruiter"]["name"],
                         candidate["coordinator"]["name"],
-                        candidate_email,
-                        candidate_phone,
+                        candidate_contact,
                     ),
                 },
             },

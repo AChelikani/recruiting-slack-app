@@ -122,6 +122,20 @@ def get_interview_date_from_scheduled_interviews(interviews, timezone):
     return "{}-{}".format(month, day)
 
 
+def get_candidate_contact(candidate):
+    email = get_candidate_email(candidate)
+    phone = get_candidate_phone(candidate)
+
+    if phone and email:
+        return "{} and {}".format(email, phone)
+    elif phone:
+        return phone
+    elif email:
+        return email
+    else:
+        return "No contact info found."
+
+
 def get_candidate_phone(candidate):
     # Choose first phone number unless mobile number is present.
     phone = None
