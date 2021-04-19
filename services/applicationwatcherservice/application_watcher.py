@@ -110,8 +110,13 @@ class ApplicationWatcher:
         )
         slack_user_ids = []
 
-        for gh_id in ghutils.combine_gh_ids(gh_recruiter_ids, gh_interviwers_ids):
-            email = gh_user_id_to_email_map[gh_id]
+        emails = [
+            gh_user_id_to_email_map[gh_id]
+            for gh_id in ghutils.combine_gh_ids(gh_recruiter_ids, gh_interviwers_ids)
+        ]
+        emails.extend(self.config.debug_slack_emails)
+
+        for email in emails:
             slack_id = self.slack_client.lookup_user_by_email(email)
             if slack_id:
                 slack_user_ids.append(slack_id)
