@@ -1,4 +1,7 @@
 import requests
+import dateutil.parser
+import datetime
+
 
 class GreenhouseClient:
     def __init__(self, token):
@@ -17,18 +20,26 @@ class GreenhouseClient:
         if r.status_code >= 400:
             print(r.text)
             return None
-        
+
         return r.json()
 
-    def get_applications(self, last_activity_after):
-        '''
-        Fetch applications that have been updated since the last_activity_after timestamp.
+    def get_applications(self, timestamp):
+        """
+        Fetch all active applications.
 
-        Expected usage: Called each day to determine applications that may require actions. 
-        '''
+        Expected usage: Called each day to determine applications that may require
+        actions.
+        """
         applications = []
-        url = "{}/applications?last_activity_after={}".format(self.base_url, last_activity_after)
-        r = requests.get(url, auth=(self.token, ""))
+        url = "{}/applications".format(self.base_url)
+        target_date = dateutil.parser.isoparse(timestamp)
+        month_before_date = target_date - datetime.timedelta(weeks=4)
+        payload = {
+            "status": "active",
+            "per_page": 500,
+            "last_activity_after": month_before_date.isoformat(),
+        }
+        r = requests.get(url, params=payload, auth=(self.token, ""))
         if r.status_code >= 400:
             print(r.text)
             return None
@@ -37,12 +48,14 @@ class GreenhouseClient:
         return r.json()
 
     def get_scheduled_interviews(self, application_id):
-        url = "{}/applications/{}/scheduled_interviews".format(self.base_url, application_id)
+        url = "{}/applications/{}/scheduled_interviews".format(
+            self.base_url, application_id
+        )
         r = requests.get(url, auth=(self.token, ""))
         if r.status_code >= 400:
             print(r.text)
             return None
-        
+
         return r.json()
 
     def get_candidate(self, id):
@@ -51,7 +64,7 @@ class GreenhouseClient:
         if r.status_code >= 400:
             print(r.text)
             return None
-        
+
         return r.json()
 
     def get_users(self):
@@ -61,7 +74,7 @@ class GreenhouseClient:
         if r.status_code >= 400:
             print(r.text)
             return None
-        
+
         # TODO: Paginate through all users
         return r.json()
 
@@ -73,4 +86,3 @@ class GreenhouseClient:
             return None
 
         return r.json()
-

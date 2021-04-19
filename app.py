@@ -5,11 +5,12 @@ from clients.slack_client import SlackClient
 from config.samsara_test import SamsaraTest
 from config.affinity_test import AffinityTest
 from services.applicationwatcherservice.application_watcher import ApplicationWatcher
+
 # Set env variables for API tokens.
 secrets.set_tokens()
 
-slack_client = SlackClient(token=os.environ['SLACK_BOT_TOKEN'])
-greenhouse_client = GreenhouseClient(token=os.environ['GREENHOUSE_SANDBOX_API_TOKEN'])
+slack_client = SlackClient(token=os.environ["SLACK_BOT_TOKEN"])
+greenhouse_client = GreenhouseClient(token=os.environ["GREENHOUSE_SANDBOX_API_TOKEN"])
 
 if __name__ == "__main__":
     # slack_client.create_private_channel("onsite-bob-jones-2")
@@ -18,4 +19,4 @@ if __name__ == "__main__":
     # config = [SamsaraTest]
     config = [AffinityTest]
     ap = ApplicationWatcher(config)
-    ap.run("2021-04-16T00:00:00.000Z")
+    ap.run("2021-04-18T00:00:00.000Z")
