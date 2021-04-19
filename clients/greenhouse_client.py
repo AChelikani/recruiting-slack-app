@@ -34,18 +34,29 @@ class GreenhouseClient:
         url = "{}/applications".format(self.base_url)
         target_date = dateutil.parser.isoparse(timestamp)
         month_before_date = target_date - datetime.timedelta(weeks=4)
-        payload = {
-            "status": "active",
-            "per_page": 500,
-            "last_activity_after": month_before_date.isoformat(),
-        }
-        r = requests.get(url, params=payload, auth=(self.token, ""))
-        if r.status_code >= 400:
-            print(r.text)
-            return None
 
-        # TODO: Page through all applications.
-        return r.json()
+        has_next_page = True
+        page = 1
+        applications = []
+        while has_next_page:
+            payload = {
+                "status": "active",
+                "per_page": 500,
+                "last_activity_after": month_before_date.isoformat(),
+                "page": page,
+            }
+            r = requests.get(url, params=payload, auth=(self.token, ""))
+            if r.status_code >= 400:
+                print(r.text)
+                return None
+
+            page_applications = r.json()
+            applications.extend(page_applications)
+
+            if len(page_applications) == 0:
+                has_next_page = False
+            page += 1
+        return applications
 
     def get_scheduled_interviews(self, application_id):
         url = "{}/applications/{}/scheduled_interviews".format(
