@@ -13,9 +13,7 @@ from datetime import date
 secrets.set_tokens()
 
 if __name__ == "__main__":
-    # configs = [SamsaraTest]
     configs = [AffinityTest]
     job = AllOrgsApplicationWatcher(configs)
     today = date.today().isoformat()
-    # job.run("2021-04-18T00:00:00.000Z")
     job.run(today)
