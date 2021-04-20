@@ -60,6 +60,7 @@ class ApplicationWatcher:
         gh_user_id_to_email_map = self._generate_gh_user_id_to_email_map()
 
         for app in apps:
+            print("Processing ... Application ID: {}".format(app["id"]))
             # Handle a candidate moving into the onsite stage.
             if ghutils.application_is_onsite(app):
                 # Get more information about scheduled interviews.
@@ -90,6 +91,12 @@ class ApplicationWatcher:
         candidate = self.gh_client.get_candidate(application["candidate_id"])
         if candidate is None:
             return None
+
+        print(
+            "Processing: {} {} with onsite tomorrow...\n".format(
+                candidate["first_name"], candidate["last_name"]
+            )
+        )
 
         interview_id_to_interview_kit_id = ghutils.get_interview_kits_from_job_stage(
             job_stage

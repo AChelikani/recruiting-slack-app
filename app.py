@@ -11,5 +11,4 @@ secrets.set_tokens()
 if __name__ == "__main__":
     configs = [AffinityTest]
     job = AllOrgsApplicationWatcher(configs)
-    today = date.today().isoformat()
-    job.run(today)
+    job.run()
