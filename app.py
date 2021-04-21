@@ -17,5 +17,5 @@ if __name__ == "__main__":
     configs = [AffinityTest]
     job = AllOrgsApplicationWatcher(configs)
     today = date.today().isoformat()
-    # job.run("2021-04-18T00:00:00.000Z")
+    # job.run("2021-04-20T00:00:00.000Z")
     job.run(today)

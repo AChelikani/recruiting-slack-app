@@ -1,13 +1,14 @@
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
+
 class SlackClient:
     def __init__(self, token):
         self.slack_client = WebClient(token=token)
 
     def create_private_channel(self, name):
         try:
-            resp = self.slack_client.conversations_create(name=name, is_private=False)
+            resp = self.slack_client.conversations_create(name=name, is_private=True)
             return resp["channel"]["id"]
         except SlackApiError as e:
             print(e.response["error"])
@@ -15,7 +16,9 @@ class SlackClient:
 
     def post_message_to_channel(self, channel, blocks, fallback_text):
         try:
-            resp = self.slack_client.chat_postMessage(channel=channel, blocks=blocks, text=fallback_text)
+            resp = self.slack_client.chat_postMessage(
+                channel=channel, blocks=blocks, text=fallback_text
+            )
             return resp["ok"]
         except SlackApiError as e:
             print(e.response["error"])
