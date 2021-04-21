@@ -4,6 +4,7 @@ import utils.greenhouse_utils as ghutils
 import utils.slack_utils as slackutils
 import utils.utils as utils
 
+# NOTE: Slack only has default emojis of the form :number: for the first nine numbers.
 NUMBER_TO_WORD = {
     1: "one",
     2: "two",
@@ -11,6 +12,9 @@ NUMBER_TO_WORD = {
     4: "four",
     5: "five",
     6: "six",
+    7: "seven",
+    8: "eight",
+    9: "nine",
 }
 
 
@@ -56,6 +60,7 @@ class ApplicationWatcher:
         gh_user_id_to_email_map = self._generate_gh_user_id_to_email_map()
 
         for app in apps:
+            print("Processing ... Application ID: {}".format(app["id"]))
             # Handle a candidate moving into the onsite stage.
             if ghutils.application_is_onsite(app):
                 # Get more information about scheduled interviews.
@@ -86,6 +91,12 @@ class ApplicationWatcher:
         candidate = self.gh_client.get_candidate(application["candidate_id"])
         if candidate is None:
             return None
+
+        print(
+            "Processing: {} {} with onsite tomorrow...\n".format(
+                candidate["first_name"], candidate["last_name"]
+            )
+        )
 
         interview_id_to_interview_kit_id = ghutils.get_interview_kits_from_job_stage(
             job_stage
@@ -144,13 +155,38 @@ class ApplicationWatcher:
         interview_id_to_interview_kit_id,
         onsite_interview_ids,
     ):
-        resume_url = ""
-        for attachment in application["attachments"]:
-            if attachment["type"] == "resume":
-                resume_url = attachment["url"]
 
         candidate_contact = ghutils.get_candidate_contact(candidate)
         job = ghutils.get_job_from_application(application)
+
+        # Populate buttons.
+        action_elements = []
+
+        resume_url = ghutils.get_application_resume(application)
+
+        if resume_url:
+            action_elements.append(
+                {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "Resume", "emoji": True},
+                    "url": resume_url,
+                    "value": "click_me_1",
+                    "action_id": "actionId-1",
+                }
+            )
+
+        linkedin_url = ghutils.get_candidate_linkedin(candidate)
+
+        if linkedin_url:
+            action_elements.append(
+                {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "LinkedIn", "emoji": True},
+                    "url": linkedin_url,
+                    "value": "click_me_2",
+                    "action_id": "actionId-2",
+                }
+            )
 
         blocks = [
             {
@@ -177,15 +213,7 @@ class ApplicationWatcher:
             },
             {
                 "type": "actions",
-                "elements": [
-                    {
-                        "type": "button",
-                        "text": {"type": "plain_text", "text": "Resume", "emoji": True},
-                        "url": resume_url,
-                        "value": "click_me_123",
-                        "action_id": "actionId-1",
-                    }
-                ],
+                "elements": action_elements,
             },
             {"type": "divider"},
         ]

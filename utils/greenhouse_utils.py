@@ -22,7 +22,11 @@ def application_is_onsite(application):
         is_onsite = False
         if application["current_stage"]:
             is_onsite = "onsite" in application["current_stage"]["name"].lower()
-
+        print(
+            "application_is_onsite: id: {}, stage: {},".format(
+                application["id"], application["current_stage"]["name"]
+            )
+        )
         return is_not_prospect and is_onsite
     except:
         return False
@@ -39,15 +43,17 @@ def get_onsite_interviews(job_stage, interviews):
 
 def onsite_is_tomorrow(job_stage, interviews, timestamp):
     onsite_interviews = get_onsite_interviews(job_stage, interviews)
-
+    print("Num onsite interviews in job stage: {}".format(len(onsite_interviews)))
     if len(onsite_interviews) == 0:
         return False
 
     onsite_first_interview_date = get_earliest_interview_datetime(onsite_interviews)
     onsite_first_interview_date = dateutil.parser.isoparse(onsite_first_interview_date)
+    print("Onsite first interview date: {}".format(str(onsite_first_interview_date)))
 
     target_date = dateutil.parser.isoparse(timestamp)
     one_day_after_target_date = target_date + datetime.timedelta(days=1)
+    print("Onsite target day: {}".format(str(one_day_after_target_date)))
 
     return (
         target_date.date().isoformat() < onsite_first_interview_date.date().isoformat()
@@ -144,7 +150,7 @@ def get_candidate_contact(candidate):
     elif email:
         return email
     else:
-        return "No contact info found."
+        return "No contact info found for candidate."
 
 
 def get_candidate_phone(candidate):
@@ -169,6 +175,29 @@ def get_candidate_email(candidate):
             email = email_address["value"]
 
     return email
+
+
+def get_candidate_linkedin(candidate):
+    # NOTE: Greenhouse does not store an explicitly labeled LinkedIn URL field.
+    # To find it, we look through the social media URLs and website URLs for a LinkedIn style URL.
+    social_media_addresses = candidate["social_media_addresses"]
+    website_addresses = candidate["website_addresses"]
+
+    all_urls = [item["value"] for item in social_media_addresses + website_addresses]
+    for url in all_urls:
+        if "linkedin.com" in url:
+            return url
+
+    return None
+
+
+def get_application_resume(application):
+    resume_url = None
+    for attachment in application["attachments"]:
+        if attachment["type"] == "resume":
+            resume_url = attachment["url"]
+
+    return resume_url
 
 
 def get_job_from_application(application):

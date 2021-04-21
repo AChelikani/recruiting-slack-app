@@ -1,14 +1,12 @@
-import secrets
-from config.affinity_test import AffinityTest
 from services.applicationwatcherservice.all_orgs_application_watcher import (
     AllOrgsApplicationWatcher,
 )
-from datetime import date
+from config.affinity_test import AffinityTest
+import json
 
-# Set env variables for API tokens.
-secrets.set_tokens()
 
-if __name__ == "__main__":
+def lambda_handler(event, context):
     configs = [AffinityTest]
     job = AllOrgsApplicationWatcher(configs)
     job.run()
+    return {"statusCode": 200, "body": json.dumps("Success")}

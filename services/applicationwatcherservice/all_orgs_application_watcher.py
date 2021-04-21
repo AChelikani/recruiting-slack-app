@@ -1,5 +1,7 @@
 from config.config import Config
 from services.applicationwatcherservice.application_watcher import ApplicationWatcher
+import pytz
+import datetime
 
 
 class AllOrgsApplicationWatcher:
@@ -11,7 +13,10 @@ class AllOrgsApplicationWatcher:
     def __init__(self, configs):
         self.configs = configs
 
-    def run(self, timestamp):
+    def run(self):
         for config in self.configs:
+            print("Processing... {}\n".format(config.org_name))
             ap = ApplicationWatcher(config)
-            ap.run(timestamp)
+            today = datetime.datetime.now(pytz.timezone(config.timezone)).isoformat()
+            print("Today: {}".format(str(today)))
+            ap.run(today)
