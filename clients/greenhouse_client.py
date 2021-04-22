@@ -23,6 +23,15 @@ class GreenhouseClient:
 
         return r.json()
 
+    def get_job(self, id):
+        url = "{}/jobs/{}".format(self.base_url, id)
+        r = requests.get(url, auth=(self.token, ""))
+        if r.status_code >= 400:
+            print(r.text)
+            return None
+
+        return r.json()
+
     def get_applications(self, timestamp):
         """
         Fetch all active applications.

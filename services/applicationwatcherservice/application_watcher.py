@@ -115,15 +115,23 @@ class ApplicationWatcher:
         channel_id = self.slack_client.create_private_channel(channel_name)
 
         # Invite participants to channel.
+        # Invite: recruiter, recruiting coordinator, interviewers, and hiring managers.
         gh_recruiter_ids = ghutils.get_recruiter_and_coordinator_ids(candidate)
         gh_interviwers_ids = ghutils.get_interviewer_ids(
             interviews, onsite_interview_ids
         )
+
+        job_id, _ = ghutils.get_job_id_and_name_from_application(application)
+        job = self.gh_client.get_job(job_id)
+        hiring_managers = ghutils.get_hiring_managers_from_job(job)
+
         slack_user_ids = []
 
         emails = [
             gh_user_id_to_email_map[gh_id]
-            for gh_id in ghutils.combine_gh_ids(gh_recruiter_ids, gh_interviwers_ids)
+            for gh_id in ghutils.combine_gh_ids(
+                gh_recruiter_ids, gh_interviwers_ids, [m["id"] for m in hiring_managers]
+            )
         ]
         emails.extend(self.config.debug_slack_emails)
 
@@ -139,6 +147,7 @@ class ApplicationWatcher:
             candidate,
             interviews,
             application,
+            job,
             interview_id_to_interview_kit_id,
             onsite_interview_ids,
         )
@@ -152,12 +161,14 @@ class ApplicationWatcher:
         candidate,
         interviews,
         application,
+        job,
         interview_id_to_interview_kit_id,
         onsite_interview_ids,
     ):
 
         candidate_contact = ghutils.get_candidate_contact(candidate)
-        job = ghutils.get_job_from_application(application)
+
+        hiring_managers = ghutils.get_hiring_managers_from_job(job)
 
         # Populate buttons.
         action_elements = []
@@ -194,7 +205,7 @@ class ApplicationWatcher:
                 "text": {
                     "type": "plain_text",
                     "text": "Interview {} {} for {}".format(
-                        candidate["first_name"], candidate["last_name"], job
+                        candidate["first_name"], candidate["last_name"], job["name"]
                     ),
                     "emoji": True,
                 },
@@ -204,9 +215,10 @@ class ApplicationWatcher:
                 "text": {
                     "type": "mrkdwn",
                     "text": self.config.intro_msg
-                    + "\n\n Recruiter: *{}*\n Coordinator: *{}*\n\n Candidate contact: {}".format(
+                    + "\n\n Recruiter: *{}*\n Coordinator: *{}*\n Hiring Manager: *{}*\n\n Candidate contact: {}".format(
                         candidate["recruiter"]["name"],
                         candidate["coordinator"]["name"],
+                        " & ".join([m.name for manager in hiring_managers]),
                         candidate_contact,
                     ),
                 },
