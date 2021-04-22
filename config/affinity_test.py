@@ -1,8 +1,5 @@
 from config.config import Config
 import os
-import secrets
-
-secrets.set_tokens()
 
 AffinityTest = Config(
     "Affinity Test",
