@@ -7,11 +7,11 @@ import boto3
 
 
 def lambda_handler(event, context):
-    s3 = boto3.client("s3")
+    # s3 = boto3.client("s3")
 
-    obj = s3.get_object(Bucket="olive-configs", Key="affinity_config.json")
-    text = obj["Body"].read().decode()
-    print(text)
+    # obj = s3.get_object(Bucket="olive-configs", Key="affinity_config.json")
+    # text = obj["Body"].read().decode()
+    # print(text)
 
     configs = [AffinityTest]
     job = AllOrgsApplicationWatcher(configs)

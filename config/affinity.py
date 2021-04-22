@@ -12,5 +12,5 @@ Affinity = Config(
     os.environ["GREENHOUSE_SANDBOX_API_TOKEN"],
     os.environ["SLACK_BOT_TOKEN"],
     debug_slack_emails=["reng@affinity.co"],
-    include_coordinator=False,
+    include_recruiter=False,
 )

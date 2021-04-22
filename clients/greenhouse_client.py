@@ -98,7 +98,7 @@ class GreenhouseClient:
                 "per_page": 500,
                 "page": page,
             }
-            r = requests.get(url, auth=(self.token, ""))
+            r = requests.get(url, params=payload, auth=(self.token, ""))
             if r.status_code >= 400:
                 print(r.text)
                 return None
