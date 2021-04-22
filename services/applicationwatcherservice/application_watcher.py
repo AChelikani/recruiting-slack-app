@@ -246,12 +246,15 @@ class ApplicationWatcher:
             },
             {"type": "divider"},
             {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "All times below are in *{}*.".format(self.config.timezone),
-                    "emoji": True,
-                },
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "Note: All times below are in *{}*".format(
+                            self.config.timezone
+                        ),
+                    }
+                ],
             },
         ]
 
