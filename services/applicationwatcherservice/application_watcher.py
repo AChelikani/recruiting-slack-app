@@ -63,7 +63,7 @@ class ApplicationWatcher:
             print("Processing ... Application ID: {}".format(app["id"]))
 
             # Verify application is in one of the enabled departments.
-            job_id, _ = ghutils.get_job_id_and_name_from_application(application)
+            job_id, _ = ghutils.get_job_id_and_name_from_application(app)
             job = self.gh_client.get_job(job_id)
 
             if self.config.departments:
@@ -228,7 +228,7 @@ class ApplicationWatcher:
                     + "\n\n Recruiter: *{}*\n Coordinator: *{}*\n Hiring Manager: *{}*\n\n Candidate contact: {}".format(
                         candidate["recruiter"]["name"],
                         candidate["coordinator"]["name"],
-                        " & ".join([m.name for manager in hiring_managers]),
+                        " & ".join([m["name"] for m in hiring_managers]),
                         candidate_contact,
                     ),
                 },
@@ -241,9 +241,9 @@ class ApplicationWatcher:
             {
                 "type": "section",
                 "text": {
-                    "type": "plain_text",
+                    "type": "mrkdwn",
                     "text": "All times below are in *{}*.".format(self.config.timezone),
-                    "emoji": true,
+                    "emoji": True,
                 },
             },
         ]

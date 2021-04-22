@@ -10,6 +10,6 @@ from datetime import date
 secrets.set_tokens()
 
 if __name__ == "__main__":
-    configs = [AffinityTest]
+    configs = [SamsaraTest]
     job = AllOrgsApplicationWatcher(configs)
     job.run()
