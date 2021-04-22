@@ -228,6 +228,14 @@ class ApplicationWatcher:
                 "elements": action_elements,
             },
             {"type": "divider"},
+            {
+                "type": "section",
+                "text": {
+                    "type": "plain_text",
+                    "text": "All times below are in *{}*.".format(self.config.timezone),
+                    "emoji": true,
+                },
+            },
         ]
 
         interview_counter = 1
