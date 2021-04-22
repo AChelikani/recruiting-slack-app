@@ -216,3 +216,12 @@ def get_hiring_managers_from_job(job):
         hiring_managers.append({"id": manager["id"], "name": manager["name"]})
 
     return hiring_managers
+
+
+def get_department_name_from_job(job):
+    department = None
+
+    if len(job["departments"]):
+        department = job["departments"][0]["name"]
+
+    return department

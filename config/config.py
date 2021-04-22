@@ -5,6 +5,7 @@ class Config:
         greenhouse_url_prefix,
         intro_msg,
         timezone,
+        departments,
         greenhouse_token,
         slack_token,
         debug_slack_emails=[],
@@ -15,5 +16,6 @@ class Config:
         self.greenhouse_url_prefix = greenhouse_url_prefix
         self.intro_msg = intro_msg
         self.timezone = timezone
+        self.departments = departments
         # Emails of the slack users to be added to every channel for debugging
         self.debug_slack_emails = debug_slack_emails

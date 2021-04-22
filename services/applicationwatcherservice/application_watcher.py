@@ -61,6 +61,16 @@ class ApplicationWatcher:
 
         for app in apps:
             print("Processing ... Application ID: {}".format(app["id"]))
+
+            # Verify application is in one of the enabled departments.
+            job_id, _ = ghutils.get_job_id_and_name_from_application(application)
+            job = self.gh_client.get_job(job_id)
+
+            if self.config.departments:
+                department = ghutils.get_department_name_from_job(job)
+                if department not in self.config.departments:
+                    continue
+
             # Handle a candidate moving into the onsite stage.
             if ghutils.application_is_onsite(app):
                 # Get more information about scheduled interviews.
@@ -75,6 +85,7 @@ class ApplicationWatcher:
                         app,
                         interviews,
                         job_stage,
+                        job,
                         gh_user_id_to_email_map,
                     )
 
@@ -85,6 +96,7 @@ class ApplicationWatcher:
         application,
         interviews,
         job_stage,
+        job,
         gh_user_id_to_email_map,
     ):
         # Get more information about the candidate.
@@ -121,8 +133,6 @@ class ApplicationWatcher:
             interviews, onsite_interview_ids
         )
 
-        job_id, _ = ghutils.get_job_id_and_name_from_application(application)
-        job = self.gh_client.get_job(job_id)
         hiring_managers = ghutils.get_hiring_managers_from_job(job)
 
         slack_user_ids = []
