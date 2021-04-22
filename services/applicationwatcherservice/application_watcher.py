@@ -115,7 +115,15 @@ class ApplicationWatcher:
         channel_id = self.slack_client.create_private_channel(channel_name)
 
         # Invite participants to channel.
-        gh_recruiter_ids = ghutils.get_recruiter_and_coordinator_ids(candidate)
+        gh_recruiter_ids = []
+        recruiter_id = ghutils.get_recruiter_id(candidate)
+        if recruiter_id is not None:
+            gh_recruiter_ids.append(recruiter_id)
+        if self.config.include_coordinator:
+            coordinator_id = ghutils.get_coordinator_id(candidate)
+            if coordinator_id is not None:
+                gh_recruiter_ids.append(coordinator_id)
+
         gh_interviwers_ids = ghutils.get_interviewer_ids(
             interviews, onsite_interview_ids
         )

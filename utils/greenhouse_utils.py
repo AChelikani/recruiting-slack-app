@@ -62,14 +62,18 @@ def onsite_is_tomorrow(job_stage, interviews, timestamp):
     )
 
 
-def get_recruiter_and_coordinator_ids(candidate):
-    ids = []
+def get_recruiter_id(candidate):
     if candidate["recruiter"]:
-        ids.append(candidate["recruiter"]["id"])
-    if candidate["coordinator"]:
-        ids.append(candidate["coordinator"]["id"])
+        return candidate["recruiter"]["id"]
 
-    return ids
+    return None
+
+
+def get_coordinator_id(candidate):
+    if candidate["coordinator"]:
+        return candidate["coordinator"]["id"]
+
+    return None
 
 
 def get_interviewer_ids(interviews, onsite_interview_ids):

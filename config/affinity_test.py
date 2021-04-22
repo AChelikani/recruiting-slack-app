@@ -9,5 +9,6 @@ AffinityTest = Config(
     "US/Pacific",
     os.environ["GREENHOUSE_SANDBOX_API_TOKEN"],
     os.environ["SLACK_BOT_TOKEN"],
-    ["advith.chelikani@gmail.com", "robert.km.eng@gmail.com"],
+    debug_slack_emails=["advith.chelikani@gmail.com", "robert.km.eng@gmail.com"],
+    include_coordinator=False,
 )

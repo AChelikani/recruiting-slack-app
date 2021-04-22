@@ -8,5 +8,5 @@ SamsaraTest = Config(
     "US/Pacific",
     os.environ["GREENHOUSE_SANDBOX_API_TOKEN"],
     os.environ["SLACK_BOT_TOKEN"],
-    ["advith.chelikani@samsara.com"],
+    debug_slack_emails=["advith.chelikani@samsara.com"],
 )
