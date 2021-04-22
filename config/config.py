@@ -9,7 +9,7 @@ class Config:
         slack_token,
         departments=None,
         debug_slack_emails=None,
-        include_coordinator=True,
+        include_recruiter=True,
     ):
         self.org_name = org_name
         self.greenhouse_token = greenhouse_token
@@ -23,4 +23,4 @@ class Config:
             [] if debug_slack_emails is None else debug_slack_emails
         )
 
-        self.include_coordinator = include_coordinator
+        self.include_recruiter = include_recruiter
