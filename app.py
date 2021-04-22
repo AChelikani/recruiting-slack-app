@@ -1,5 +1,6 @@
 import secrets
 from config.affinity_test import AffinityTest
+from config.samsara_test import SamsaraTest
 from services.applicationwatcherservice.all_orgs_application_watcher import (
     AllOrgsApplicationWatcher,
 )

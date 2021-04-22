@@ -1,5 +1,8 @@
 from config.config import Config
 import os
+import secrets
+
+secrets.set_tokens()
 
 SamsaraTest = Config(
     "Samsara Test",
@@ -8,5 +11,5 @@ SamsaraTest = Config(
     "US/Pacific",
     os.environ["GREENHOUSE_SANDBOX_API_TOKEN"],
     os.environ["SLACK_BOT_TOKEN"],
-    ["advith.chelikani@samsara.com"],
+    ["advith.chelikani@gmail.com"],
 )
