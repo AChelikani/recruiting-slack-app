@@ -62,6 +62,10 @@ class ApplicationWatcher:
         for app in apps:
             print("Processing ... Application ID: {}".format(app["id"]))
 
+            # Discard applications that are for prospects, ie. not associated with a job.
+            if app["prospect"]:
+                continue
+
             # Verify application is in one of the enabled departments.
             job_id, _ = ghutils.get_job_id_and_name_from_application(app)
             job = self.gh_client.get_job(job_id)
