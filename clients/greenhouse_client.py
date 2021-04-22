@@ -90,13 +90,27 @@ class GreenhouseClient:
     def get_users(self):
         users = []
         url = "{}/users".format(self.base_url)
-        r = requests.get(url, auth=(self.token, ""))
-        if r.status_code >= 400:
-            print(r.text)
-            return None
+        has_next_page = True
+        page = 1
 
-        # TODO: Paginate through all users
-        return r.json()
+        while has_next_page:
+            payload = {
+                "per_page": 500,
+                "page": page,
+            }
+            r = requests.get(url, auth=(self.token, ""))
+            if r.status_code >= 400:
+                print(r.text)
+                return None
+
+            page_users = r.json()
+            users.extend(page_users)
+
+            if len(page_users) == 0:
+                has_next_page = False
+            page += 1
+
+        return users
 
     def get_scorecards_for_application(self, application_id):
         url = "{}/applications/{}/scorecards".format(self.base_url, application_id)
