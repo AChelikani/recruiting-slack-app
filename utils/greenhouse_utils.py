@@ -91,11 +91,13 @@ def get_interviewer_ids(interviews, onsite_interview_ids):
     return ids
 
 
-def combine_gh_ids(arr1, arr2):
+def combine_gh_ids(arr1, arr2, arr3):
     dedup = set()
     for item in arr1:
         dedup.add(item)
     for item in arr2:
+        dedup.add(item)
+    for item in arr3:
         dedup.add(item)
     return list(dedup)
 
@@ -204,7 +206,26 @@ def get_application_resume(application):
     return resume_url
 
 
-def get_job_from_application(application):
+def get_job_id_and_name_from_application(application):
     # Candidate applications have exactly 1 job.
-    job = application["jobs"][0]["name"]
-    return job
+    job_name = application["jobs"][0]["name"]
+    job_id = application["jobs"][0]["id"]
+    return job_id, job_name
+
+
+def get_hiring_managers_from_job(job):
+    hiring_managers = []
+
+    for manager in job["hiring_team"]["hiring_managers"]:
+        hiring_managers.append({"id": manager["id"], "name": manager["name"]})
+
+    return hiring_managers
+
+
+def get_department_name_from_job(job):
+    department = None
+
+    if len(job["departments"]):
+        department = job["departments"][0]["name"]
+
+    return department

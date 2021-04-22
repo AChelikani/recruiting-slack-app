@@ -61,6 +61,16 @@ class ApplicationWatcher:
 
         for app in apps:
             print("Processing ... Application ID: {}".format(app["id"]))
+
+            # Verify application is in one of the enabled departments.
+            job_id, _ = ghutils.get_job_id_and_name_from_application(app)
+            job = self.gh_client.get_job(job_id)
+
+            if self.config.departments:
+                department = ghutils.get_department_name_from_job(job)
+                if department not in self.config.departments:
+                    continue
+
             # Handle a candidate moving into the onsite stage.
             if ghutils.application_is_onsite(app):
                 # Get more information about scheduled interviews.
@@ -75,6 +85,7 @@ class ApplicationWatcher:
                         app,
                         interviews,
                         job_stage,
+                        job,
                         gh_user_id_to_email_map,
                     )
 
@@ -85,6 +96,7 @@ class ApplicationWatcher:
         application,
         interviews,
         job_stage,
+        job,
         gh_user_id_to_email_map,
     ):
         # Get more information about the candidate.
@@ -114,7 +126,7 @@ class ApplicationWatcher:
         )
         channel_id = self.slack_client.create_private_channel(channel_name)
 
-        # Invite participants to channel.
+        # Invite: recruiter, recruiting coordinator, interviewers, and hiring managers.
         gh_recruiter_ids = []
         recruiter_id = ghutils.get_recruiter_id(candidate)
         if recruiter_id is not None:
@@ -127,11 +139,16 @@ class ApplicationWatcher:
         gh_interviwers_ids = ghutils.get_interviewer_ids(
             interviews, onsite_interview_ids
         )
+
+        hiring_managers = ghutils.get_hiring_managers_from_job(job)
+
         slack_user_ids = []
 
         emails = [
             gh_user_id_to_email_map[gh_id]
-            for gh_id in ghutils.combine_gh_ids(gh_recruiter_ids, gh_interviwers_ids)
+            for gh_id in ghutils.combine_gh_ids(
+                gh_recruiter_ids, gh_interviwers_ids, [m["id"] for m in hiring_managers]
+            )
         ]
         emails.extend(self.config.debug_slack_emails)
 
@@ -147,6 +164,7 @@ class ApplicationWatcher:
             candidate,
             interviews,
             application,
+            job,
             interview_id_to_interview_kit_id,
             onsite_interview_ids,
         )
@@ -160,12 +178,14 @@ class ApplicationWatcher:
         candidate,
         interviews,
         application,
+        job,
         interview_id_to_interview_kit_id,
         onsite_interview_ids,
     ):
 
         candidate_contact = ghutils.get_candidate_contact(candidate)
-        job = ghutils.get_job_from_application(application)
+
+        hiring_managers = ghutils.get_hiring_managers_from_job(job)
 
         # Populate buttons.
         action_elements = []
@@ -202,7 +222,7 @@ class ApplicationWatcher:
                 "text": {
                     "type": "plain_text",
                     "text": "Interview {} {} for {}".format(
-                        candidate["first_name"], candidate["last_name"], job
+                        candidate["first_name"], candidate["last_name"], job["name"]
                     ),
                     "emoji": True,
                 },
@@ -212,9 +232,10 @@ class ApplicationWatcher:
                 "text": {
                     "type": "mrkdwn",
                     "text": self.config.intro_msg
-                    + "\n\n Recruiter: *{}*\n Coordinator: *{}*\n\n Candidate contact: {}".format(
+                    + "\n\n Recruiter: *{}*\n Coordinator: *{}*\n Hiring Manager: *{}*\n\n Candidate contact: {}".format(
                         candidate["recruiter"]["name"],
                         candidate["coordinator"]["name"],
+                        " & ".join([m["name"] for m in hiring_managers]),
                         candidate_contact,
                     ),
                 },
@@ -224,6 +245,14 @@ class ApplicationWatcher:
                 "elements": action_elements,
             },
             {"type": "divider"},
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "All times below are in *{}*.".format(self.config.timezone),
+                    "emoji": True,
+                },
+            },
         ]
 
         interview_counter = 1
