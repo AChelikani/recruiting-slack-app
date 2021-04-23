@@ -60,6 +60,9 @@ class ApplicationWatcher:
         gh_user_id_to_email_map = self._generate_gh_user_id_to_email_map()
 
         jobs = self.gh_client.get_jobs()
+        job_id_to_job = {}
+        for job in jobs:
+            job_id_to_job[job["id"]] = job
 
         for app in apps:
             print("Application processing... ID: {}".format(app["id"]))
@@ -70,7 +73,9 @@ class ApplicationWatcher:
 
             # Verify application is in one of the enabled departments.
             job_id, _ = ghutils.get_job_id_and_name_from_application(app)
-            job = [job for job in jobs if job["id"] == job_id][0]
+            if job_id not in job_id_to_job:
+                continue
+            job = job_id_to_job[job_id]
 
             if self.config.departments:
                 department = ghutils.get_department_name_from_job(job)
