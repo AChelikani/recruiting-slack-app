@@ -1,6 +1,6 @@
 class Config:
     def __init__(self):
-        self.org_name = ""
+        self.name = ""
         self.greenhouse_url_prefix = ""
         self.intro_msg = ""
         self.timezone = ""
@@ -11,8 +11,8 @@ class Config:
         self.debug_slack_emails = []
         self.include_recruiter = True
 
-    def set_org_name(self, org_name):
-        self.org_name = org_name
+    def set_name(self, name):
+        self.name = name
 
     def set_greenhouse_url_prefix(self, greenhouse_url_prefix):
         self.greenhouse_url_prefix = greenhouse_url_prefix
@@ -45,7 +45,7 @@ def parse_config(json):
     """
     config = Config()
     if "name" in json:
-        config.set_org_name(json["name"])
+        config.set_name(json["name"])
 
     if "greenhouseSilo" in json:
         config.set_greenhouse_url_prefix(json["greenhouseSilo"])
