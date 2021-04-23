@@ -1,0 +1,9 @@
+{
+    "name": "Samsara Test",
+    "greenhouseSilo": "app2",
+    "introMessage": ":wave: Thank you for helping to make Samsara a better place to work.",
+    "timezone": "US/Pacific",
+    "departments": ["Engineering"],
+    "debugEmails": ["advith.chelikani@gmail.com", "robert.km.eng@gmail.com"],
+    "includeRecruiter": true
+}

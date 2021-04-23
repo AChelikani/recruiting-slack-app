@@ -3,18 +3,22 @@ import secrets
 # Set env variables for API tokens.
 secrets.set_tokens()
 
-from config.affinity_test import AffinityTest
-from config.affinity import Affinity
-from config.samsara_test import SamsaraTest
+from config.config import parse_config
 from services.applicationwatcherservice.all_orgs_application_watcher import (
     AllOrgsApplicationWatcher,
 )
 from datetime import date
+import json
+import os
 
 
 if __name__ == "__main__":
-    # configs = [Affinity]
-    configs = [AffinityTest]
-    # configs = [SamsaraTest]
+    with open("config/samsara_test.json") as f:
+        data = json.load(f)
+
+    affinityConfig = parse_config(data)
+    affinityConfig.set_greenhouse_token(os.environ["GREENHOUSE_SANDBOX_API_TOKEN"])
+    affinityConfig.set_slack_token(os.environ["SLACK_BOT_TOKEN"])
+    configs = [affinityConfig]
     job = AllOrgsApplicationWatcher(configs)
     job.run()

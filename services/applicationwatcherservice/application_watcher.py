@@ -174,6 +174,7 @@ class ApplicationWatcher:
             interview_id_to_interview_kit_id,
             onsite_interview_ids,
         )
+
         self.slack_client.post_message_to_channel(
             channel_id, blocks, "Unable to post message"
         )
