@@ -238,7 +238,7 @@ class ApplicationWatcher:
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": self.config.intro_msg
+                    "text": self.config.intro_message
                     + "\n\n Recruiter: *{}*\n Coordinator: *{}*\n Hiring Manager: *{}*\n\n Candidate contact: {}".format(
                         candidate["recruiter"]["name"],
                         candidate["coordinator"]["name"],

@@ -2,7 +2,7 @@ class Config:
     def __init__(self):
         self.name = ""
         self.greenhouse_silo = ""
-        self.intro_msg = ""
+        self.intro_message = ""
         self.timezone = ""
         self.greenhouse_token = ""
         self.slack_token = ""
@@ -17,8 +17,8 @@ class Config:
     def set_greenhouse_silo(self, greenhouse_silo):
         self.greenhouse_silo = greenhouse_silo
 
-    def set_intro_msg(self, intro_msg):
-        self.intro_msg = intro_msg
+    def set_intro_message(self, intro_message):
+        self.intro_message = intro_message
 
     def set_timezone(self, timezone):
         self.timezone = timezone
@@ -51,7 +51,7 @@ def parse_config(json):
         config.set_greenhouse_silo(json["greenhouseSilo"])
 
     if "introMessage" in json:
-        config.set_intro_msg(json["introMessage"])
+        config.set_intro_message(json["introMessage"])
 
     if "timezone" in json:
         config.set_timezone(json["timezone"])
