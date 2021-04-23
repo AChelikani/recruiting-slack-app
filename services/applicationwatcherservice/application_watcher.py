@@ -65,7 +65,7 @@ class ApplicationWatcher:
             job_id_to_job[job["id"]] = job
 
         for app in apps:
-            print("Application processing... ID: {}".format(app["id"]))
+            print("Application processing... ID: {}\n".format(app["id"]))
 
             # Discard applications that are for prospects, ie. not associated with a job.
             if app["prospect"]:
@@ -116,7 +116,7 @@ class ApplicationWatcher:
             return None
 
         print(
-            "Onsite tomorrow ... Candidate: {} {} \n".format(
+            "Onsite tomorrow ... Candidate: {} {}".format(
                 candidate["first_name"], candidate["last_name"]
             )
         )
@@ -186,7 +186,7 @@ class ApplicationWatcher:
             channel_id, blocks, "Unable to post message"
         )
         print("Schedule posted...")
-        print("\n\n")
+        print("\n")
         return
 
     def _construct_intro_message(
