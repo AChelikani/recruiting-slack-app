@@ -156,7 +156,7 @@ class ApplicationWatcher:
                 gh_recruiter_ids, gh_interviwers_ids, [m["id"] for m in hiring_managers]
             )
         ]
-        emails.extend(self.config.debug_slack_emails)
+        emails.extend(self.config.debug_emails)
 
         for email in emails:
             slack_id = self.slack_client.lookup_user_by_email(email)

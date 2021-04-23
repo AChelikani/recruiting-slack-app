@@ -8,7 +8,7 @@ class Config:
         self.slack_token = ""
         self.departments = []
         # Emails of the slack users to be added to every channel for debugging
-        self.debug_slack_emails = []
+        self.debug_emails = []
         self.include_recruiter = True
 
     def set_name(self, name):
@@ -32,8 +32,8 @@ class Config:
     def set_departments(self, departments):
         self.departments = departments
 
-    def set_debug_slack_emails(self, debug_slack_emails):
-        self.debug_slack_emails = debug_slack_emails
+    def set_debug_emails(self, debug_emails):
+        self.debug_emails = debug_emails
 
     def set_include_recruiter(self, include_recruiter):
         self.include_recruiter = include_recruiter
@@ -66,7 +66,7 @@ def parse_config(json):
         config.set_departments(json["departments"])
 
     if "debugEmails" in json:
-        config.set_debug_slack_emails(json["debugEmails"])
+        config.set_debug_emails(json["debugEmails"])
 
     if "includeRecruiter" in json:
         config.set_include_recruiter(json["includeRecruiter"])
