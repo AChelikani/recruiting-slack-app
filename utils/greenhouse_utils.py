@@ -216,6 +216,7 @@ def get_hiring_managers_from_job(job):
 
 
 def get_department_name_from_job(job):
+    # Jobs can have only 1 department.
     department = None
 
     if len(job["departments"]):
