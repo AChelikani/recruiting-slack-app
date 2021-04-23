@@ -1,7 +1,7 @@
 class Config:
     def __init__(self):
         self.name = ""
-        self.greenhouse_url_prefix = ""
+        self.greenhouse_silo = ""
         self.intro_msg = ""
         self.timezone = ""
         self.greenhouse_token = ""
@@ -14,8 +14,8 @@ class Config:
     def set_name(self, name):
         self.name = name
 
-    def set_greenhouse_url_prefix(self, greenhouse_url_prefix):
-        self.greenhouse_url_prefix = greenhouse_url_prefix
+    def set_greenhouse_silo(self, greenhouse_silo):
+        self.greenhouse_silo = greenhouse_silo
 
     def set_intro_msg(self, intro_msg):
         self.intro_msg = intro_msg
@@ -48,7 +48,7 @@ def parse_config(json):
         config.set_name(json["name"])
 
     if "greenhouseSilo" in json:
-        config.set_greenhouse_url_prefix(json["greenhouseSilo"])
+        config.set_greenhouse_silo(json["greenhouseSilo"])
 
     if "introMessage" in json:
         config.set_intro_msg(json["introMessage"])

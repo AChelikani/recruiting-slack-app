@@ -285,7 +285,7 @@ class ApplicationWatcher:
                 interview["interview"]["id"]
             ]
             interview_kit_url = ghutils.construct_interview_kit_url(
-                self.config.greenhouse_url_prefix,
+                self.config.greenhouse_silo,
                 interview_kit_id,
                 candidate["id"],
                 application["id"],
