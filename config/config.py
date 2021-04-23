@@ -1,14 +1,42 @@
 class Config:
     def __init__(self):
+        # Name of the organization.
+        # JSON: name
         self.name = ""
+
+        # Silo the greenhouse data is, ex. app2.
+        # This is also the prefix of the organizations greenhouse URLs.
+        # JSON: greenhouseSilo (string)
         self.greenhouse_silo = ""
+
+        # Organization specific introduction message that is used as part
+        # of the larger first slack message.
+        # JSON: introMessage (string)
         self.intro_message = ""
+
+        # Timezone the organization schedules interviews in.
+        # Should be a valid pytz timezone, ex. "US/Pacific".
+        # JSON: timezone (string)
         self.timezone = ""
+
+        # Greenhouse API token.
+        # JSON: greenhouseToken (string)
         self.greenhouse_token = ""
+
+        # Slack bot API token.
+        # JSON: slackToken (string)
         self.slack_token = ""
+
+        # Departments for which the bot is enabled.
+        # JSON: departments (array of strings)
         self.departments = []
-        # Emails of the slack users to be added to every channel for debugging
+
+        # Emails of the slack users to be added to every channel for debugging.
+        # JSON: debugEmails (array of strings)
         self.debug_emails = []
+
+        # Whether or not the recruiter should be invited to the channel.
+        # JSON: includeRecruiter (boolean)
         self.include_recruiter = True
 
     def set_name(self, name):
