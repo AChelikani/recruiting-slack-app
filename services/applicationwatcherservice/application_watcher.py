@@ -62,7 +62,7 @@ class ApplicationWatcher:
         jobs = self.gh_client.get_jobs()
 
         for app in apps:
-            print("Processing ... Application ID: {}".format(app["id"]))
+            print("Application processing... ID: {}".format(app["id"]))
 
             # Discard applications that are for prospects, ie. not associated with a job.
             if app["prospect"]:
@@ -111,7 +111,7 @@ class ApplicationWatcher:
             return None
 
         print(
-            "Processing: {} {} with onsite tomorrow...\n".format(
+            "Onsite tomorrow ... Candidate: {} {} \n".format(
                 candidate["first_name"], candidate["last_name"]
             )
         )
@@ -131,6 +131,7 @@ class ApplicationWatcher:
             candidate["first_name"], candidate["last_name"], interview_date
         )
         channel_id = self.slack_client.create_private_channel(channel_name)
+        print("Channel created... Channel Name: {}".format(channel_name))
 
         # Invite: recruiter, recruiting coordinator, interviewers, and hiring managers.
         gh_recruiter_ids = []
@@ -164,6 +165,7 @@ class ApplicationWatcher:
                 slack_user_ids.append(slack_id)
 
         self.slack_client.invite_users_to_channel(channel_id, slack_user_ids)
+        print("Panel invited... # of members: {}".format(len(slack_user_ids)))
 
         # Post introduction message into channel.
         blocks = self._construct_intro_message(
@@ -178,6 +180,8 @@ class ApplicationWatcher:
         self.slack_client.post_message_to_channel(
             channel_id, blocks, "Unable to post message"
         )
+        print("Schedule posted...")
+        print("\n\n")
         return
 
     def _construct_intro_message(

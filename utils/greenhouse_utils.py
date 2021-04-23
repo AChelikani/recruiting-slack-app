@@ -22,11 +22,7 @@ def application_is_onsite(application):
         is_onsite = False
         if application["current_stage"]:
             is_onsite = "onsite" in application["current_stage"]["name"].lower()
-        print(
-            "application_is_onsite: id: {}, stage: {},".format(
-                application["id"], application["current_stage"]["name"]
-            )
-        )
+
         return is_not_prospect and is_onsite
     except:
         return False
@@ -43,17 +39,14 @@ def get_onsite_interviews(job_stage, interviews):
 
 def onsite_is_tomorrow(job_stage, interviews, timestamp):
     onsite_interviews = get_onsite_interviews(job_stage, interviews)
-    print("Num onsite interviews in job stage: {}".format(len(onsite_interviews)))
     if len(onsite_interviews) == 0:
         return False
 
     onsite_first_interview_date = get_earliest_interview_datetime(onsite_interviews)
     onsite_first_interview_date = dateutil.parser.isoparse(onsite_first_interview_date)
-    print("Onsite first interview date: {}".format(str(onsite_first_interview_date)))
 
     target_date = dateutil.parser.isoparse(timestamp)
     one_day_after_target_date = target_date + datetime.timedelta(days=1)
-    print("Onsite target day: {}".format(str(one_day_after_target_date)))
 
     return (
         target_date.date().isoformat() < onsite_first_interview_date.date().isoformat()

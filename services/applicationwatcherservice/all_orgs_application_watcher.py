@@ -15,8 +15,8 @@ class AllOrgsApplicationWatcher:
 
     def run(self):
         for config in self.configs:
-            print("Processing... {}\n".format(config.name))
+            print("Processing... {}".format(config.name))
             ap = ApplicationWatcher(config)
             today = datetime.datetime.now(pytz.timezone(config.timezone)).isoformat()
-            print("Today: {}".format(str(today)))
+            print("Today: {}\n".format(str(today)))
             ap.run(today)
