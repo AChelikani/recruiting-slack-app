@@ -8,7 +8,7 @@ import boto3
 
 def lambda_handler(event, context):
     s3 = boto3.client("s3")
-    obj = s3.get_object(Bucket="olive-configs", Key="samsara_test.json")
+    obj = s3.get_object(Bucket="olive-configs", Key="samsara_sandbox.json")
     config_bytes = obj["Body"].read().decode()
     json_config = json.loads(config_bytes)
 
