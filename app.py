@@ -1,7 +1,7 @@
-import secrets
+import tokens
 
 # Set env variables for API tokens.
-secrets.set_tokens()
+tokens.set_tokens()
 
 from config.config import parse_config
 from services.applicationwatcherservice.all_orgs_application_watcher import (
