@@ -1,11 +1,11 @@
 {
     "name": "Samsara Test",
-    "greenhouseSilo": "app2",
+    "greenhouseSilo": "app1",
     "introMessage": ":wave: Thank you for helping to make Samsara a better place to work.",
     "timezone": "US/Pacific",
     "slackToken": "SLACK_BOT_TOKEN_TEST",
     "greenhouseToken": "GREENHOUSE_API_TOKEN_SAMSARA",
-    "departments": ["Engineering"],
+    "departments": ["Software Engineering"],
     "debugEmails": ["advith.chelikani@gmail.com", "robert.km.eng@gmail.com"],
     "includeRecruiter": true
 }
