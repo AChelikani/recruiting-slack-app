@@ -13,12 +13,10 @@ import os
 
 
 if __name__ == "__main__":
-    with open("config/samsara_test.json") as f:
+    with open("config/samsara_sandbox.json") as f:
         data = json.load(f)
 
-    affinityConfig = parse_config(data)
-    affinityConfig.set_greenhouse_token(os.environ["GREENHOUSE_SANDBOX_API_TOKEN"])
-    affinityConfig.set_slack_token(os.environ["SLACK_BOT_TOKEN"])
-    configs = [affinityConfig]
+    samsaraSandboxConfig = parse_config(data)
+    configs = [samsaraSandboxConfig]
     job = AllOrgsApplicationWatcher(configs)
     job.run()

@@ -1,3 +1,6 @@
+import os
+
+
 class Config:
     def __init__(self):
         # Name of the organization.
@@ -85,10 +88,12 @@ def parse_config(json):
         config.set_timezone(json["timezone"])
 
     if "greenhouseToken" in json:
-        config.set_greenhouse_token(json["greenhouseToken"])
+        # NOTE: Value in config JSON is env variable key.
+        config.set_greenhouse_token(os.environ[json["greenhouseToken"]])
 
     if "slackToken" in json:
-        config.set_slack_token(json["slackToken"])
+        # NOTE: Value in config JSON is env variable key.
+        config.set_slack_token(os.environ[json["slackToken"]])
 
     if "departments" in json:
         config.set_departments(json["departments"])
