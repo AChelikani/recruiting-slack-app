@@ -139,38 +139,39 @@ class ApplicationWatcher:
         print("Channel created... Channel Name: {}".format(channel_name))
 
         # Invite: recruiter, recruiting coordinator, interviewers, and hiring managers.
-        gh_recruiter_ids = []
+        gh_recruiters = []
         if self.config.include_recruiter:
-            recruiter_id = ghutils.get_recruiter_id(candidate)
-            if recruiter_id is not None:
-                gh_recruiter_ids.append(recruiter_id)
-        coordinator_id = ghutils.get_coordinator_id(candidate)
-        if coordinator_id is not None:
-            gh_recruiter_ids.append(coordinator_id)
+            recruiter = ghutils.get_recruiter(candidate)
+            if recruiter is not None:
+                gh_recruiters.append(recruiter)
+        coordinator = ghutils.get_coordinator(candidate)
+        if coordinator is not None:
+            gh_recruiters.append(coordinator)
 
-        gh_interviwers_ids = ghutils.get_interviewer_ids(
-            interviews, onsite_interview_ids
-        )
+        gh_interviwers = ghutils.get_interviewers(interviews, onsite_interview_ids)\
+        gh_hiring_managers = ghutils.get_hiring_managers_from_job(job)
+        panel = gh_recruiters + gh_interviwers + gh_hiring_managers
+        panel = ghutils.panel_with_emails(panel, gh_user_id_to_email_map)
 
-        hiring_managers = ghutils.get_hiring_managers_from_job(job)
+        panel.extend([{"email": email, "name": "DEBUG"} for email in self.config.debug_emails])
 
         slack_user_ids = []
-
-        emails = [
-            gh_user_id_to_email_map[gh_id]
-            for gh_id in ghutils.combine_gh_ids(
-                gh_recruiter_ids, gh_interviwers_ids, [m["id"] for m in hiring_managers]
-            )
-        ]
-        emails.extend(self.config.debug_emails)
-
-        for email in emails:
+        persons_not_found = []
+        for person in panel:
+            email = person["email"]
             slack_id = self.slack_client.lookup_user_by_email(email)
             if slack_id:
                 slack_user_ids.append(slack_id)
+            else:
+                # User has no associated slack account.
+                persons_not_found.append(person)
 
         self.slack_client.invite_users_to_channel(channel_id, slack_user_ids)
         print("Panel invited... # of members: {}".format(len(slack_user_ids)))
+
+        if persons_not_found:
+            blocks = self._construct_missing_persons_message(persons_not_found)
+            self.slack_client.post_message_to_channel(channel_id, , "Unable to invite some users.")
 
         # Post introduction message into channel.
         blocks = self._construct_intro_message(
@@ -183,11 +184,25 @@ class ApplicationWatcher:
         )
 
         self.slack_client.post_message_to_channel(
-            channel_id, blocks, "Unable to post message"
+            channel_id, blocks, "Unable to post schedule message."
         )
         print("Schedule posted...")
         print("\n")
         return
+
+    def _construct_missing_persons_message(self, persons_not_found):
+        names = [p["name"] for p in persons_not_found]
+        msg = "Please invite {} to channel manually.".format(", ".join(names))
+        blocks = [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": msg,
+                }
+            }
+        ]
+        return blocks
 
     def _construct_intro_message(
         self,

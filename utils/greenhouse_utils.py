@@ -46,23 +46,29 @@ def onsite_is_tomorrow(job_stage, interviews, timestamp):
     )
 
 
-def get_recruiter_id(candidate):
+def get_recruiter(candidate):
     if candidate["recruiter"]:
-        return candidate["recruiter"]["id"]
+        return {
+            "id": candidate["recruiter"]["id"],
+            "name": candidate["recruiter"["name"]],
+        }
 
     return None
 
 
-def get_coordinator_id(candidate):
+def get_coordinator(candidate):
     if candidate["coordinator"]:
-        return candidate["coordinator"]["id"]
+        return {
+            "id": candidate["coordinator"]["id"],
+            "name": candidate["coordinator"]["name"],
+        }
 
     return None
 
 
-def get_interviewer_ids(interviews, onsite_interview_ids):
+def get_interviewers(interviews, onsite_interview_ids):
     # Should only fetch interviews for the onsite interview.
-    ids = []
+    interviewers = []
     for interview in interviews:
         is_scheduled = interview["status"] == "scheduled"
 
@@ -71,19 +77,10 @@ def get_interviewer_ids(interviews, onsite_interview_ids):
 
         if is_scheduled:
             for interviewer in interview["interviewers"]:
-                ids.append(interviewer["id"])
-    return ids
-
-
-def combine_gh_ids(arr1, arr2, arr3):
-    dedup = set()
-    for item in arr1:
-        dedup.add(item)
-    for item in arr2:
-        dedup.add(item)
-    for item in arr3:
-        dedup.add(item)
-    return list(dedup)
+                interviewers.append(
+                    {"id": interviewer["id"], "name": interviewer["name"]}
+                )
+    return interviewers
 
 
 def get_interview_kits_from_job_stage(job_stage):
@@ -220,3 +217,18 @@ def get_department_name_from_job(job):
         department = job["departments"][0]["name"]
 
     return department
+
+
+def panel_with_emails(panel_without_emails, user_id_to_email_map):
+    panel_ids = set()
+    panel = []
+
+    for person in panel_without_emails:
+        if person["id"] in panel_ids:
+            continue
+
+        panel_ids.add(person["id"])
+        email = user_id_to_email_map[person["id"]]
+        panel.append({"id": person["id"], "name": person["name"], "email": email})
+
+    return panel
