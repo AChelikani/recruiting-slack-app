@@ -286,7 +286,7 @@ class ApplicationWatcher:
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": "Note: All times below are in *{}*".format(
+                        "text": "Note: All times below are in *{}*.".format(
                             self.config.timezone
                         ),
                     }
