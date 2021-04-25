@@ -50,7 +50,7 @@ def get_recruiter(candidate):
     if candidate["recruiter"]:
         return {
             "id": candidate["recruiter"]["id"],
-            "name": candidate["recruiter"["name"]],
+            "name": candidate["recruiter"]["name"],
         }
 
     return None

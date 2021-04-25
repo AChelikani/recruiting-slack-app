@@ -10,7 +10,9 @@ from services.applicationwatcherservice.all_orgs_application_watcher import (
 from datetime import date
 import json
 import os
+import tokens
 
+tokens.set_tokens()
 
 if __name__ == "__main__":
     with open("config/samsara_sandbox.json") as f:

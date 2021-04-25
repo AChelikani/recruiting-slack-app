@@ -148,12 +148,14 @@ class ApplicationWatcher:
         if coordinator is not None:
             gh_recruiters.append(coordinator)
 
-        gh_interviwers = ghutils.get_interviewers(interviews, onsite_interview_ids)\
+        gh_interviwers = ghutils.get_interviewers(interviews, onsite_interview_ids)
         gh_hiring_managers = ghutils.get_hiring_managers_from_job(job)
         panel = gh_recruiters + gh_interviwers + gh_hiring_managers
         panel = ghutils.panel_with_emails(panel, gh_user_id_to_email_map)
 
-        panel.extend([{"email": email, "name": "DEBUG"} for email in self.config.debug_emails])
+        panel.extend(
+            [{"email": email, "name": "DEBUG"} for email in self.config.debug_emails]
+        )
 
         slack_user_ids = []
         persons_not_found = []
@@ -167,11 +169,14 @@ class ApplicationWatcher:
                 persons_not_found.append(person)
 
         self.slack_client.invite_users_to_channel(channel_id, slack_user_ids)
-        print("Panel invited... # of members: {}".format(len(slack_user_ids)))
+        print("Panel invited... Members: {}".format([p["name"] for p in panel]))
 
+        # Post invite missing persons into channel message.
         if persons_not_found:
             blocks = self._construct_missing_persons_message(persons_not_found)
-            self.slack_client.post_message_to_channel(channel_id, , "Unable to invite some users.")
+            self.slack_client.post_message_to_channel(
+                channel_id, blocks, "Unable to invite some users."
+            )
 
         # Post introduction message into channel.
         blocks = self._construct_intro_message(
@@ -199,7 +204,7 @@ class ApplicationWatcher:
                 "text": {
                     "type": "mrkdwn",
                     "text": msg,
-                }
+                },
             }
         ]
         return blocks
