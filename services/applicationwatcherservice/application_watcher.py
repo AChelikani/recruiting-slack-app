@@ -219,7 +219,7 @@ class ApplicationWatcher:
                 }
             )
 
-        linkedin_url = ghutils.get_candidate_linkedin(candidate)
+        linkedin_url = ghutils.get_candidate_linkedin(candidate, application)
 
         if linkedin_url:
             action_elements.append(

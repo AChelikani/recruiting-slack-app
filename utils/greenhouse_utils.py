@@ -176,9 +176,11 @@ def get_candidate_email(candidate):
     return email
 
 
-def get_candidate_linkedin(candidate):
+def get_candidate_linkedin(candidate, application):
     # NOTE: Greenhouse does not store an explicitly labeled LinkedIn URL field.
     # To find it, we look through the social media URLs and website URLs for a LinkedIn style URL.
+    # If we don't find it there, we look inside the answers to an orgs custom questions.
+    # If a custom question contains "LinkedIn" in it, we use the answer to that question as the candidates LinkedIn URL.
     social_media_addresses = candidate["social_media_addresses"]
     website_addresses = candidate["website_addresses"]
 
@@ -186,6 +188,10 @@ def get_candidate_linkedin(candidate):
     for url in all_urls:
         if "linkedin.com" in url:
             return url
+
+    for item in application["answers"]:
+        if "linkedin" in item["question"].lower():
+            return item["answer"]
 
     return None
 
