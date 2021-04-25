@@ -3,25 +3,16 @@ import dateutil.parser
 import datetime
 
 
-def is_onsite(job_stage):
-    """
-    Determines if a job_stage is an onsite interview.
-
-    Args:
-        job_stage: A Greenhouse job_stage object.
-    """
-    try:
-        return job_stage["name"].lower().contains("onsite")
-    except:
-        return False
-
-
 def application_is_onsite(application):
     try:
         is_not_prospect = application["prospect"] == False
         is_onsite = False
         if application["current_stage"]:
+            # TODO: Add department->onsite name/id map to config to determine if interview is onsite that needs channel.
             is_onsite = "onsite" in application["current_stage"]["name"].lower()
+            is_onsite = (
+                is_onsite or "on-site" in application["current_stage"]["name"].lower()
+            )
 
         return is_not_prospect and is_onsite
     except:
