@@ -279,7 +279,9 @@ class ApplicationWatcher:
                 "text": {
                     "type": "plain_text",
                     "text": "Interview {} {} for {}".format(
-                        candidate["first_name"], candidate["last_name"], job["name"]
+                        candidate["first_name"].capitalize(),
+                        candidate["last_name"].capitalize(),
+                        job["name"],
                     ),
                     "emoji": True,
                 },

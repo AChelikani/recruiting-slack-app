@@ -1,6 +1,7 @@
 from utils.utils import parse_time
 import dateutil.parser
 import datetime
+import validators
 
 
 def filter_applications(applications):
@@ -185,6 +186,21 @@ def get_candidate_email(candidate):
     return email
 
 
+def clean_url(url):
+    # Slack blocks only accept URLs that are well formed.
+    # Specifically, This means the URL needs to start with a https://www.
+
+    # If URL doesn't start with http or https add that prefix.
+    if not url.startswith("https://") and not url.startswith("http://"):
+        url = "https://" + url
+
+    # If URL is still invalid, abandon it.
+    if not validators.url(url):
+        return None
+
+    return url
+
+
 def get_candidate_linkedin(candidate, application):
     # NOTE: Greenhouse does not store an explicitly labeled LinkedIn URL field.
     # To find it, we look through the social media URLs and website URLs for a LinkedIn style URL.
@@ -196,11 +212,17 @@ def get_candidate_linkedin(candidate, application):
     all_urls = [item["value"] for item in social_media_addresses + website_addresses]
     for url in all_urls:
         if "linkedin.com" in url:
-            return url
+            cleaned_url = clean_url(url)
+            if cleaned_url:
+                return cleaned_url
+            return None
 
     for item in application["answers"]:
         if "linkedin" in item["question"].lower():
-            return item["answer"]
+            cleaned_url = clean_url(item["answer"])
+            if cleaned_url:
+                return cleaned_url
+            return None
 
     return None
 
