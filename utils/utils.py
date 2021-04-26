@@ -24,9 +24,11 @@ def format_time(time_str, timezone):
     year, month, day, hour, minute = parse_time(time_str, timezone)
 
     time_suffix = "am"
-    if hour >= 12:
+    if hour > 12:
         time_suffix = "pm"
         hour -= 12
+    elif hour == 12:
+        time_suffix = "pm"
 
     return "{}:{}{}".format(hour, minute, time_suffix)
 
