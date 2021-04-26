@@ -46,9 +46,12 @@ class GreenhouseClient:
 
         return r.json()
 
-    def get_jobs(self):
+    def get_jobs(self, department_id=None):
+        extra_payload = {"status": "open"}
+        if department_id:
+            extra_payload["department_id"] = department_id
         url = "{}/jobs".format(self.base_url)
-        return self._get_paginated_items(url)
+        return self._get_paginated_items(url, payload=extra_payload)
 
     def get_job(self, id):
         url = "{}/jobs/{}".format(self.base_url, id)
@@ -59,7 +62,7 @@ class GreenhouseClient:
 
         return r.json()
 
-    def get_applications(self, timestamp):
+    def get_applications_by_job(self, timestamp, job_id):
         """
         Fetch all active applications.
 
@@ -72,6 +75,7 @@ class GreenhouseClient:
         payload = {
             "status": "active",
             "last_activity_after": month_before_date.isoformat(),
+            "job_id": job_id,
         }
         url = "{}/applications".format(self.base_url)
         return self._get_paginated_items(url, payload)
@@ -99,6 +103,15 @@ class GreenhouseClient:
     def get_users(self):
         url = "{}/users".format(self.base_url)
         return self._get_paginated_items(url)
+
+    def get_departments(self):
+        url = "{}/departments".format(self.base_url)
+        r = requests.get(url, auth=(self.token, ""))
+        if r.status_code >= 400:
+            print(r.text)
+            return None
+
+        return r.json()
 
     def get_scorecards_for_application(self, application_id):
         url = "{}/applications/{}/scorecards".format(self.base_url, application_id)

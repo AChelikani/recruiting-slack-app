@@ -15,10 +15,10 @@ import tokens
 tokens.set_tokens()
 
 if __name__ == "__main__":
-    with open("config/samsara_sandbox.json") as f:
+    with open("config/samsara_test.json") as f:
         data = json.load(f)
 
-    samsaraSandboxConfig = parse_config(data)
-    configs = [samsaraSandboxConfig]
+    samsaraTestConfig = parse_config(data)
+    configs = [samsaraTestConfig]
     job = AllOrgsApplicationWatcher(configs)
     job.run()

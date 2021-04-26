@@ -3,6 +3,27 @@ import dateutil.parser
 import datetime
 
 
+def filter_applications(applications):
+    filtered_apps = []
+    for app in applications:
+        # Discard applications that are for prospects, ie. not associated with a job.
+        if app["prospect"]:
+            continue
+
+        filtered_apps.append(app)
+
+    return filtered_apps
+
+
+def get_onsite_applications(applications):
+    onsite_apps = []
+    for app in applications:
+        if application_is_onsite(app):
+            onsite_apps.append(app)
+
+    return onsite_apps
+
+
 def application_is_onsite(application):
     try:
         is_not_prospect = application["prospect"] == False
@@ -209,14 +230,13 @@ def get_hiring_managers_from_job(job):
     return hiring_managers
 
 
-def get_department_name_from_job(job):
-    # Jobs can have only 1 department.
-    department = None
+def get_department_ids_from_names(department_names, departments):
+    ids = []
+    for department in departments:
+        if department["name"] in department_names:
+            ids.append(department["id"])
 
-    if len(job["departments"]):
-        department = job["departments"][0]["name"]
-
-    return department
+    return ids
 
 
 def panel_with_emails(panel_without_emails, user_id_to_email_map):

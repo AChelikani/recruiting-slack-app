@@ -55,50 +55,71 @@ class ApplicationWatcher:
         return user_id_to_email
 
     def _poll_applications(self, timestamp):
-        # Get all applications with updates since the last run.
-        apps = self.gh_client.get_applications(timestamp)
+        # Get IDs of enabled departments.
+        department_ids = None
+        if self.config.departments:
+            departments = self.gh_client.get_departments()
+            department_ids = ghutils.get_department_ids_from_names(
+                self.config.departments, departments
+            )
+
+        print("Department IDs: {}".format(department_ids))
+
+        # Get all open jobs from enabled departments.
+        job_id_to_job = {}
+        if department_ids:
+            for id in department_ids:
+                jobs = self.gh_client.get_jobs(department_id=id)
+                print("Fetched {} jobs for department {}".format(len(jobs), id))
+                for job in jobs:
+                    job_id_to_job[job["id"]] = job
+
+        # Get all applications for open jobs with updates in last month.
+        apps = []
+        for job_id in job_id_to_job:
+            apps_for_job = self.gh_client.get_applications_by_job(timestamp, job_id)
+            print(
+                "Fetched {} applications for job {}".format(len(apps_for_job), job_id)
+            )
+
+            # Filter applications to those who are not prospects.
+            apps.extend(ghutils.filter_applications(apps_for_job))
+
+        print("Total active candidate applications to analyze: {}".format(len(apps)))
+
         gh_user_id_to_email_map = self._generate_gh_user_id_to_email_map()
 
-        jobs = self.gh_client.get_jobs()
-        job_id_to_job = {}
-        for job in jobs:
-            job_id_to_job[job["id"]] = job
+        # Filter applications to those in onsite stage.
+        apps = ghutils.get_onsite_applications(apps)
+        print("Total apps in onsite stage: {}\n".format(len(apps)))
 
+        job_stage_id_to_job_stage_map = {}
         for app in apps:
             print("Application processing... ID: {}\n".format(app["id"]))
 
-            # Discard applications that are for prospects, ie. not associated with a job.
-            if app["prospect"]:
-                continue
+            # Get more information about scheduled interviews.
+            interviews = self.gh_client.get_scheduled_interviews(app["id"])
 
-            # Verify application is in one of the enabled departments.
+            # Load the job information.
             job_id, _ = ghutils.get_job_id_and_name_from_application(app)
-            if job_id not in job_id_to_job:
-                continue
             job = job_id_to_job[job_id]
 
-            if self.config.departments:
-                department = ghutils.get_department_name_from_job(job)
-                if department not in self.config.departments:
-                    continue
+            # Get more information about interview kits.
+            job_stage_id = app["current_stage"]["id"]
+            if job_stage_id not in job_stage_id_to_job_stage_map:
+                job_stage_id_to_job_stage_map[
+                    job_stage_id
+                ] = self.gh_client.get_job_stage(job_stage_id)
+            job_stage = job_stage_id_to_job_stage_map[job_stage_id]
 
-            # Handle a candidate moving into the onsite stage.
-            if ghutils.application_is_onsite(app):
-                # Get more information about scheduled interviews.
-                interviews = self.gh_client.get_scheduled_interviews(app["id"])
-
-                # Get more information about interview kits.
-                job_stage_id = app["current_stage"]["id"]
-                job_stage = self.gh_client.get_job_stage(job_stage_id)
-
-                if ghutils.onsite_is_tomorrow(job_stage, interviews, timestamp):
-                    self._handle_new_onsite(
-                        app,
-                        interviews,
-                        job_stage,
-                        job,
-                        gh_user_id_to_email_map,
-                    )
+            if ghutils.onsite_is_tomorrow(job_stage, interviews, timestamp):
+                self._handle_new_onsite(
+                    app,
+                    interviews,
+                    job_stage,
+                    job,
+                    gh_user_id_to_email_map,
+                )
 
         return
 
