@@ -51,6 +51,9 @@ def get_onsite_interviews(job_stage, interviews):
 
 
 def onsite_is_tomorrow(job_stage, interviews, timestamp):
+    if interviews is None:
+        return False
+
     onsite_interviews = get_onsite_interviews(job_stage, interviews)
     if len(onsite_interviews) == 0:
         return False
