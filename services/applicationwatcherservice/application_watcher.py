@@ -3,6 +3,7 @@ from clients.slack_client import SlackClient
 import utils.greenhouse_utils as ghutils
 import utils.slack_utils as slackutils
 import utils.utils as utils
+import time
 
 # NOTE: Slack only has default emojis of the form :number: for the first nine numbers.
 NUMBER_TO_WORD = {
@@ -81,6 +82,7 @@ class ApplicationWatcher:
             print(
                 "Fetched {} applications for job {}".format(len(apps_for_job), job_id)
             )
+            utils.inject_throttle_delay(0.1)
 
             # Filter applications to those who are not prospects.
             apps.extend(ghutils.filter_applications(apps_for_job))
@@ -121,6 +123,13 @@ class ApplicationWatcher:
                     gh_user_id_to_email_map,
                 )
 
+            else:
+                print("No onsite tomorrow.")
+
+        # Without injecting a delay, we get rate limited by Greenhouse.
+        # We are making an interviews, job stage, and candidate
+        utils.inject_throttle_delay(1)
+
         return
 
     def _handle_new_onsite(
@@ -134,6 +143,7 @@ class ApplicationWatcher:
         # Get more information about the candidate.
         candidate = self.gh_client.get_candidate(application["candidate_id"])
         if candidate is None:
+            print("Couldn't fetch candidate...")
             return None
 
         print(
