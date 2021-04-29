@@ -74,6 +74,7 @@ class ApplicationWatcher:
                 print("Fetched {} jobs for department {}".format(len(jobs), id))
                 for job in jobs:
                     job_id_to_job[job["id"]] = job
+                utils.inject_throttle_delay(1)
 
         # Get all applications for open jobs with updates in last month.
         apps = []
@@ -82,7 +83,7 @@ class ApplicationWatcher:
             print(
                 "Fetched {} applications for job {}".format(len(apps_for_job), job_id)
             )
-            utils.inject_throttle_delay(0.1)
+            utils.inject_throttle_delay(1)
 
             # Filter applications to those who are not prospects.
             apps.extend(ghutils.filter_applications(apps_for_job))

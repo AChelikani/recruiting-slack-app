@@ -195,6 +195,9 @@ def clean_url(url):
     # Specifically, This means the URL needs to start with a https://www.
 
     # If URL doesn't start with http or https add that prefix.
+    if not url:
+        return None
+
     if not url.startswith("https://") and not url.startswith("http://"):
         url = "https://" + url
 
