@@ -181,7 +181,9 @@ class ApplicationWatcher:
             gh_recruiters.append(coordinator)
 
         gh_interviwers = ghutils.get_interviewers(interviews, onsite_interview_ids)
-        gh_hiring_managers = ghutils.get_hiring_managers_from_job(job)
+        gh_hiring_managers = ghutils.dedup_hiring_managers(
+            gh_interviwers, ghutils.get_hiring_managers_from_job(job)
+        )
         panel = gh_recruiters + gh_interviwers + gh_hiring_managers
         panel = ghutils.panel_with_emails(panel, gh_user_id_to_email_map)
 
@@ -218,6 +220,7 @@ class ApplicationWatcher:
             job,
             interview_id_to_interview_kit_id,
             onsite_interview_ids,
+            gh_hiring_managers,
         )
 
         self.slack_client.post_message_to_channel(
@@ -249,11 +252,10 @@ class ApplicationWatcher:
         job,
         interview_id_to_interview_kit_id,
         onsite_interview_ids,
+        hiring_managers,
     ):
 
         candidate_contact = ghutils.get_candidate_contact(candidate)
-
-        hiring_managers = ghutils.get_hiring_managers_from_job(job)
 
         # Populate buttons.
         action_elements = []

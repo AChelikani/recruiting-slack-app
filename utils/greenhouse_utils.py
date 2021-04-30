@@ -268,6 +268,18 @@ def get_department_ids_from_names(department_names, departments):
     return ids
 
 
+def dedup_hiring_managers(interviewers, hiring_managers):
+    # If there is more than one hiring manager, only list the one on the panel.
+    if len(hiring_managers) == 1:
+        return hiring_managers
+
+    for hiring_manager in hiring_managers:
+        if hiring_manager in interviewers:
+            return [hiring_manager]
+
+    return hiring_managers
+
+
 def panel_with_emails(panel_without_emails, user_id_to_email_map):
     panel_ids = set()
     panel = []
