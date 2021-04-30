@@ -1,6 +1,7 @@
 import requests
 import dateutil.parser
 import datetime
+import utils.utils as utils
 
 
 class GreenhouseClient:
@@ -19,6 +20,7 @@ class GreenhouseClient:
                 **payload,
             }
             r = requests.get(url, params=full_payload, auth=(self.token, ""))
+            self._handle_rate_limit(r)
             if r.status_code >= 400:
                 print(r.text)
                 return None
@@ -37,9 +39,18 @@ class GreenhouseClient:
         else:
             print(resp.json())
 
+    def _handle_rate_limit(self, resp):
+        headers = resp.headers
+        if "X-RateLimit-Remaining" in headers:
+            remainingReqs = headers["X-RateLimit-Remaining"]
+            # Any time we get too close to the rate limit, sleep let the limit reset.
+            if remainingReqs < 5:
+                utils.inject_throttle_delay(10)
+
     def get_job_stage(self, id):
         url = "{}/job_stages/{}".format(self.base_url, id)
         r = requests.get(url, auth=(self.token, ""))
+        self._handle_rate_limit(r)
         if r.status_code >= 400:
             print(r.text)
             return None
@@ -56,6 +67,7 @@ class GreenhouseClient:
     def get_job(self, id):
         url = "{}/jobs/{}".format(self.base_url, id)
         r = requests.get(url, auth=(self.token, ""))
+        self._handle_rate_limit(r)
         if r.status_code >= 400:
             print(r.text)
             return None
@@ -85,6 +97,7 @@ class GreenhouseClient:
             self.base_url, application_id
         )
         r = requests.get(url, auth=(self.token, ""))
+        self._handle_rate_limit(r)
         if r.status_code >= 400:
             print(r.text)
             return None
@@ -94,6 +107,7 @@ class GreenhouseClient:
     def get_candidate(self, id):
         url = "{}/candidates/{}".format(self.base_url, id)
         r = requests.get(url, auth=(self.token, ""))
+        self._handle_rate_limit(r)
         if r.status_code >= 400:
             print(r.text)
             return None
@@ -107,6 +121,7 @@ class GreenhouseClient:
     def get_departments(self):
         url = "{}/departments".format(self.base_url)
         r = requests.get(url, auth=(self.token, ""))
+        self._handle_rate_limit(r)
         if r.status_code >= 400:
             print(r.text)
             return None
@@ -116,6 +131,7 @@ class GreenhouseClient:
     def get_scorecards_for_application(self, application_id):
         url = "{}/applications/{}/scorecards".format(self.base_url, application_id)
         r = requests.get(url, auth=(self.token, ""))
+        self._handle_rate_limit(r)
         if r.status_code >= 400:
             print(r.text)
             return None
