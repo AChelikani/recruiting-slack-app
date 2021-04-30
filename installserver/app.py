@@ -14,6 +14,17 @@ app = Flask(__name__)
 state_map = {}
 
 
+@app.route("/interactivity_callback", methods=["POST"])
+def interactivity_callback():
+    """
+    Required callback that Slack will POST a request to when a user clicks on a button
+    in the bot's messages. Must respond with a 200.
+
+    https://github.com/slackapi/node-slack-sdk/issues/869
+    """
+    return "Success"
+
+
 @app.route("/callback")
 def callback():
     """
