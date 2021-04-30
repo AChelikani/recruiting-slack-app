@@ -43,9 +43,10 @@ class GreenhouseClient:
         headers = resp.headers
         if "X-RateLimit-Remaining" in headers:
             remainingReqs = headers["X-RateLimit-Remaining"]
-            # Any time we get too close to the rate limit, sleep let the limit reset.
+            # Any time we get too close to the rate limit, sleep and let the limit reset.
             if remainingReqs < 5:
                 utils.inject_throttle_delay(10)
+        return
 
     def get_job_stage(self, id):
         url = "{}/job_stages/{}".format(self.base_url, id)
