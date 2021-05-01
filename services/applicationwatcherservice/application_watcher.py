@@ -73,6 +73,8 @@ class ApplicationWatcher:
                 jobs = self.gh_client.get_jobs(department_id=id)
                 print("Fetched {} jobs for department {}".format(len(jobs), id))
                 for job in jobs:
+                    if ghutils.is_job_excluded(job, self.config.exclude_jobs):
+                        continue
                     job_id_to_job[job["id"]] = job
 
         # Get all applications for open jobs with updates in last month.

@@ -293,3 +293,14 @@ def panel_with_emails(panel_without_emails, user_id_to_email_map):
         panel.append({"id": person["id"], "name": person["name"], "email": email})
 
     return panel
+
+
+def is_job_excluded(job, exclude_jobs):
+    if len(exclude_jobs) == 0:
+        return False
+
+    for job_substring in exclude_jobs:
+        if job_substring in job["name"]:
+            return True
+
+    return False

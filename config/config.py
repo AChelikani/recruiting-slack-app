@@ -42,6 +42,10 @@ class Config:
         # JSON: includeRecruiter (boolean)
         self.include_recruiter = True
 
+        # Job title substrings that should be excluded.
+        # JSON: excludeJobs (array of string)
+        self.exclude_jobs = []
+
     def set_name(self, name):
         self.name = name
 
@@ -68,6 +72,9 @@ class Config:
 
     def set_include_recruiter(self, include_recruiter):
         self.include_recruiter = include_recruiter
+
+    def set_exclude_jobs(self, exclude_jobs):
+        self.exclude_jobs = exclude_jobs
 
 
 def parse_config(json):
@@ -103,5 +110,8 @@ def parse_config(json):
 
     if "includeRecruiter" in json:
         config.set_include_recruiter(json["includeRecruiter"])
+
+    if "excludeJobs" in json:
+        config.set_exclude_jobs(json["excludeJobs"])
 
     return config
