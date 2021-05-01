@@ -1,4 +1,4 @@
-from utils.utils import parse_time
+import utils.utils as utils
 import dateutil.parser
 import datetime
 import validators
@@ -147,7 +147,7 @@ def get_first_onsite_interview_date_from_scheduled_interviews(
     onsite_interviews = get_onsite_interviews(job_stage, interviews)
     date = get_earliest_interview_datetime(onsite_interviews)
 
-    _, month, day, _, _ = parse_time(date, timezone)
+    _, month, day, _, _ = utils.parse_time(date, timezone)
 
     return "{}-{}".format(month, day)
 

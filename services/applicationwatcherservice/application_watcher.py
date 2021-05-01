@@ -47,6 +47,9 @@ class ApplicationWatcher:
         self.slack_client = SlackClient(config.slack_token)
 
     def _generate_gh_user_id_to_email_map(self):
+        """
+        Generate a map of Greenhouse user IDs to their emails.
+        """
         user_id_to_email = {}
         users = self.gh_client.get_users()
 
@@ -57,12 +60,15 @@ class ApplicationWatcher:
 
     def _poll_applications(self, timestamp):
         # Get IDs of enabled departments.
-        department_ids = None
+        department_ids = []
+        departments = self.gh_client.get_departments()
         if self.config.departments:
-            departments = self.gh_client.get_departments()
             department_ids = ghutils.get_department_ids_from_names(
                 self.config.departments, departments
             )
+        else:
+            for department in departments:
+                department_ids.append(department["id"])
 
         print("Department IDs: {}".format(department_ids))
 
