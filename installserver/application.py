@@ -8,7 +8,7 @@ from slack_sdk import WebClient
 
 tokens.set_app_client_id_and_secret()
 
-app = Flask(__name__)
+application = Flask(__name__)
 
 # TODO: Make this a session to state map.
 state_map = {}
@@ -74,4 +74,4 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run(port=8000)
+    application.run()
