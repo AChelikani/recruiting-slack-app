@@ -66,7 +66,7 @@ class ApplicationWatcher:
             department_ids = ghutils.get_department_ids_from_names(
                 self.config.departments, departments
             )
-        else:
+        elif departments:
             for department in departments:
                 department_ids.append(department["id"])
 
@@ -74,6 +74,7 @@ class ApplicationWatcher:
 
         # Get all open jobs from enabled departments.
         job_id_to_job = {}
+        jobs = []
         if department_ids:
             for id in department_ids:
                 jobs = self.gh_client.get_jobs(department_id=id)
@@ -82,10 +83,13 @@ class ApplicationWatcher:
                         len(jobs) if jobs else 0, id
                     )
                 )
-                for job in jobs:
-                    if ghutils.is_job_excluded(job, self.config.exclude_jobs):
-                        continue
-                    job_id_to_job[job["id"]] = job
+        else:
+            jobs = self.gh_client.get_jobs()
+
+        for job in jobs:
+            if ghutils.is_job_excluded(job, self.config.exclude_jobs):
+                continue
+            job_id_to_job[job["id"]] = job
 
         # Get all applications for open jobs with updates in last month.
         apps = []
