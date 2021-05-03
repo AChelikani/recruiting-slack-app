@@ -5,6 +5,8 @@ import validators
 
 
 def filter_applications(applications):
+    if not applications:
+        return []
     filtered_apps = []
     for app in applications:
         # Discard applications that are for prospects, ie. not associated with a job.
@@ -163,7 +165,7 @@ def get_candidate_contact(candidate):
     elif email:
         return email
     else:
-        return "No contact info found for candidate."
+        return "Not found"
 
 
 def get_candidate_phone(candidate):

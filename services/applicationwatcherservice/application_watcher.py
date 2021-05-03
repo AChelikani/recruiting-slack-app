@@ -77,7 +77,7 @@ class ApplicationWatcher:
         if department_ids:
             for id in department_ids:
                 jobs = self.gh_client.get_jobs(department_id=id)
-                print("Fetched {} jobs for department {}".format(len(jobs), id))
+                print("Fetched {} jobs for department {}".format(len(jobs) if jobs else 0, id))
                 for job in jobs:
                     if ghutils.is_job_excluded(job, self.config.exclude_jobs):
                         continue
@@ -88,7 +88,7 @@ class ApplicationWatcher:
         for job_id in job_id_to_job:
             apps_for_job = self.gh_client.get_applications_by_job(timestamp, job_id)
             print(
-                "Fetched {} applications for job {}".format(len(apps_for_job), job_id)
+                "Fetched {} applications for job {}".format(len(apps_for_job) if apps_for_job else 0, job_id)
             )
 
             # Filter applications to those who are not prospects.
@@ -108,6 +108,8 @@ class ApplicationWatcher:
 
             # Get more information about scheduled interviews.
             interviews = self.gh_client.get_scheduled_interviews(app["id"])
+            if not interviews:
+                continue
 
             # Load the job information.
             job_id, _ = ghutils.get_job_id_and_name_from_application(app)
@@ -147,7 +149,7 @@ class ApplicationWatcher:
         candidate = self.gh_client.get_candidate(application["candidate_id"])
         if candidate is None:
             print("Couldn't fetch candidate...")
-            return None
+            return
 
         print(
             "Onsite tomorrow ... Candidate: {} {}".format(
@@ -258,6 +260,15 @@ class ApplicationWatcher:
     ):
 
         candidate_contact = ghutils.get_candidate_contact(candidate)
+        recruiter_name = "Not found"
+        coordinator_name = "Not found"
+        hiring_manager_names = " & ".join([m["name"] for m in hiring_managers]) or "Not found"
+
+        if candidate["recruiter"] and candidate["recruiter"]["name"]:
+            recruiter_name = candidate["recruiter"]["name"]
+
+        if candidate["coordinator"] and candidate["coordinator"]["name"]:
+            coordinator_name = candidate["coordinator"]["name"]
 
         # Populate buttons.
         action_elements = []
@@ -296,7 +307,7 @@ class ApplicationWatcher:
                     "text": "Interview {} {} for {}".format(
                         candidate["first_name"].capitalize(),
                         candidate["last_name"].capitalize(),
-                        job["name"],
+                        job["name"] if job["name"] else "Job not found",
                     ),
                     "emoji": True,
                 },
@@ -307,9 +318,9 @@ class ApplicationWatcher:
                     "type": "mrkdwn",
                     "text": self.config.intro_message
                     + "\n\n Recruiter: *{}*\n Coordinator: *{}*\n Hiring Manager: *{}*\n\n Candidate contact: {}".format(
-                        candidate["recruiter"]["name"],
-                        candidate["coordinator"]["name"],
-                        " & ".join([m["name"] for m in hiring_managers]),
+                        recruiter_name,
+                        coordinator_name
+                        hiring_manager_names,
                         candidate_contact,
                     ),
                 },
@@ -334,14 +345,20 @@ class ApplicationWatcher:
 
         interview_counter = 1
         for interview in interviews:
+            if not interview["interview"]:
+                continue
+
             if interview["interview"]["id"] not in onsite_interview_ids:
                 continue
             if interview["status"] != "scheduled":
                 continue
 
             interviewers = []
-            for interviewer in interview["interviewers"]:
-                interviewers.append(interviewer["name"])
+            if not interview["interviewers"]:
+                interviewers.append("None")
+            else:
+                for interviewer in interview["interviewers"]:
+                    interviewers.append(interviewer["name"])
 
             interview_name = interview["interview"]["name"]
             start_time = interview["start"]["date_time"]
@@ -368,7 +385,7 @@ class ApplicationWatcher:
             interview_text = ":{}: {}{} |  {}  |  {}".format(
                 NUMBER_TO_WORD[interview_counter],
                 display_time,
-                " " * (7 - len(display_time)),
+                " " * (21 - len(display_time)),
                 interview_name,
                 display_interviewers,
             )
