@@ -393,7 +393,7 @@ class ApplicationWatcher:
             interview_text = ":{}: {}{} |  {}  |  {}".format(
                 NUMBER_TO_WORD[interview_counter],
                 display_time,
-                " " * (21 - len(display_time)),
+                " ",
                 interview_name,
                 display_interviewers,
             )
