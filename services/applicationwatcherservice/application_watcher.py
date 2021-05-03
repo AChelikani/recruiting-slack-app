@@ -16,6 +16,17 @@ NUMBER_TO_WORD = {
     7: "seven",
     8: "eight",
     9: "nine",
+    10: "keycap_ten",
+    11: "olive",
+    12: "olive",
+    13: "olive",
+    14: "olive",
+    15: "olive",
+    16: "olive",
+    17: "olive",
+    18: "olive",
+    19: "olive",
+    20: "olive",
 }
 
 
