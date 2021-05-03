@@ -77,7 +77,11 @@ class ApplicationWatcher:
         if department_ids:
             for id in department_ids:
                 jobs = self.gh_client.get_jobs(department_id=id)
-                print("Fetched {} jobs for department {}".format(len(jobs) if jobs else 0, id))
+                print(
+                    "Fetched {} jobs for department {}".format(
+                        len(jobs) if jobs else 0, id
+                    )
+                )
                 for job in jobs:
                     if ghutils.is_job_excluded(job, self.config.exclude_jobs):
                         continue
@@ -88,7 +92,9 @@ class ApplicationWatcher:
         for job_id in job_id_to_job:
             apps_for_job = self.gh_client.get_applications_by_job(timestamp, job_id)
             print(
-                "Fetched {} applications for job {}".format(len(apps_for_job) if apps_for_job else 0, job_id)
+                "Fetched {} applications for job {}".format(
+                    len(apps_for_job) if apps_for_job else 0, job_id
+                )
             )
 
             # Filter applications to those who are not prospects.
@@ -262,7 +268,9 @@ class ApplicationWatcher:
         candidate_contact = ghutils.get_candidate_contact(candidate)
         recruiter_name = "Not found"
         coordinator_name = "Not found"
-        hiring_manager_names = " & ".join([m["name"] for m in hiring_managers]) or "Not found"
+        hiring_manager_names = (
+            " & ".join([m["name"] for m in hiring_managers]) or "Not found"
+        )
 
         if candidate["recruiter"] and candidate["recruiter"]["name"]:
             recruiter_name = candidate["recruiter"]["name"]
@@ -319,7 +327,7 @@ class ApplicationWatcher:
                     "text": self.config.intro_message
                     + "\n\n Recruiter: *{}*\n Coordinator: *{}*\n Hiring Manager: *{}*\n\n Candidate contact: {}".format(
                         recruiter_name,
-                        coordinator_name
+                        coordinator_name,
                         hiring_manager_names,
                         candidate_contact,
                     ),
