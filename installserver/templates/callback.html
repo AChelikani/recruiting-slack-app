@@ -1,8 +1,36 @@
 <html>
-    <head>
-
-    </head>
-    <body>
-        Congrats, Olive was installed. Your access token is {{ access_token }}.
-    </body>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Nunito", sans-serif;
+        font-weight: 600;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
+      p {
+        width: 400px;
+      }
+      .token {
+        font-weight: 400;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <p>
+      Congrats, Olive was installed in Slack. Please reach out to us to finish
+      the installation 1. Generate your Greenhouse token so we can connect to
+      Greenhouse, and 2. Customize it how you like it! We apologize for the
+      manual process, we're working on getting it automated and self-serve!
+    </p>
+    <p class="token">Your access token is {{ access_token }}.</p>
+  </body>
 </html>
