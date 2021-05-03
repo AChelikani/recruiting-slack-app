@@ -3,19 +3,23 @@ import secrets
 import requests
 from requests.auth import HTTPBasicAuth
 import os
-import tokens
 from slack_sdk import WebClient
 
-tokens.set_app_client_id_and_secret()
+application = Flask(__name__)
 
-app = Flask(__name__)
-app.config["SERVER_NAME"] = "localhost:8000"
+if not os.getenv("PRODUCTION"):
+    application.config["SERVER_NAME"] = "localhost:5000"
+    import tokens
+
+    tokens.set_app_client_id_and_secret()
+else:
+    application.config["SERVER_NAME"] = "recruitbot-dev.us-east-1.elasticbeanstalk.com"
 
 # TODO: Make this a session to state map.
 state_map = {}
 
 
-@app.route("/interactivity_callback", methods=["POST"])
+@application.route("/interactivity_callback", methods=["POST"])
 def interactivity_callback():
     """
     Required callback that Slack will POST a request to when a user clicks on a button
@@ -26,7 +30,7 @@ def interactivity_callback():
     return "Success"
 
 
-@app.route("/callback")
+@application.route("/callback")
 def callback():
     """
     Verify state param value matches value held in memory.
@@ -63,7 +67,7 @@ def callback():
     return render_template("callback.html", access_token=access_token)
 
 
-@app.route("/")
+@application.route("/")
 def home():
     """
     Home page has Add to Slack button with scopes embedded.
@@ -94,4 +98,4 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run(port=8000)
+    application.run()

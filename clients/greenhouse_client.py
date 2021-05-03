@@ -42,7 +42,7 @@ class GreenhouseClient:
     def _handle_rate_limit(self, resp):
         headers = resp.headers
         if "X-RateLimit-Remaining" in headers:
-            remainingReqs = headers["X-RateLimit-Remaining"]
+            remainingReqs = int(headers["X-RateLimit-Remaining"])
             # Any time we get too close to the rate limit, sleep and let the limit reset.
             if remainingReqs < 5:
                 utils.inject_throttle_delay(10)

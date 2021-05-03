@@ -17,7 +17,7 @@ def lambda_handler(event, context):
         obj = s3.get_object(Bucket=BUCKET, Key=key)
         config_bytes = obj["Body"].read().decode()
         json_config = json.loads(config_bytes)
-        config.append(parse_config(json_config))
+        configs.append(parse_config(json_config))
 
     job = AllOrgsApplicationWatcher(configs)
     job.run()
