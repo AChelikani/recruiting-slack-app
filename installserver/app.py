@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for
 import secrets
 import requests
 from requests.auth import HTTPBasicAuth
@@ -9,6 +9,7 @@ from slack_sdk import WebClient
 tokens.set_app_client_id_and_secret()
 
 app = Flask(__name__)
+app.config["SERVER_NAME"] = "localhost:8000"
 
 # TODO: Make this a session to state map.
 state_map = {}
@@ -49,12 +50,15 @@ def callback():
         client_id=os.environ["SLACK_BOT_CLIENT_ID"],
         client_secret=os.environ["SLACK_BOT_CLIENT_SECRET"],
         code=code,
-        redirect_uri="http://localhost:8000/callback",
+        redirect_uri=url_for("callback", _external=True),
     )
 
     access_token = resp["access_token"]
     bot_user_id = resp["bot_user_id"]
     app_id = resp["app_id"]
+
+    # Log all this junk until we can save it in the config directly
+    print(resp)
 
     return render_template("callback.html", access_token=access_token)
 
@@ -69,8 +73,24 @@ def home():
     """
     state = secrets.token_hex(8)
     state_map[state] = True
-    redirect_uri = "http://localhost:8000/callback"
-    return render_template("index.html", state=state, redirect_uri=redirect_uri)
+    redirect_uri = url_for("callback", _external=True)
+    scopes = [
+        "channels:history",
+        "channels:manage",
+        "chat:write",
+        "groups:write",
+        "users:read",
+        "users:read.email",
+    ]
+    scopes = ",".join(scopes)
+    client_id = "1729142514404.1722977848626"
+    return render_template(
+        "index.html",
+        state=state,
+        redirect_uri=redirect_uri,
+        client_id=client_id,
+        scopes=scopes,
+    )
 
 
 if __name__ == "__main__":

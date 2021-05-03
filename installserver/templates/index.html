@@ -1,9 +1,73 @@
 <html>
-    <head>
-
-    </head>
-    <body>
-        <h2> Hello, welcome to Olive </h2>
-        <a href="https://slack.com/oauth/v2/authorize?state={{ state }}&redirect_uri={{ redirect_uri }}&client_id=1729142514404.1722977848626&scope=channels:history,channels:manage,chat:write,groups:write,users:read,users:read.email&user_scope="><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcSet="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>
-    </body>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Nunito", sans-serif;
+        font-weight: 600;
+        display: flex;
+        justify-content: center;
+      }
+      h2 {
+        margin: 0;
+      }
+      .landing-left {
+        padding: 260px 40px 20px 20px;
+      }
+      .landing-right {
+        padding: 180px 20px 20px 40px;
+      }
+      .landing-action-row {
+        display: flex;
+        align-items: center;
+      }
+      .landing-action-row-love {
+        margin-left: 20px;
+        font-size: 13px;
+      }
+      .landing-intro-row {
+        display: flex;
+        align-items: flex-end;
+      }
+      .landing-intro-row-olive {
+        margin-left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="landing-left">
+      <div class="landing-intro-row">
+        <h2>Meet Olive</h2>
+        <img class="landing-intro-row-olive" src= {{ url_for('static', filename
+        = 'images/recruitbotolive.png') }} width="100" height="100">
+      </div>
+      <h3>Automate your onsite interview Slack channels</h3>
+      <div class="landing-action-row">
+        <a
+          href="https://slack.com/oauth/v2/authorize?state={{ state }}&redirect_uri={{ redirect_uri }}&client_id={{ client_id }}&scope={{ scopes }}"
+          ><img
+            alt="Add to Slack"
+            height="40"
+            width="139"
+            src="https://platform.slack-edge.com/img/add_to_slack.png"
+            srcset="
+              https://platform.slack-edge.com/img/add_to_slack.png    1x,
+              https://platform.slack-edge.com/img/add_to_slack@2x.png 2x
+            "
+        /></a>
+        <p class="landing-action-row-love">
+          A WIP made with &lt;3 by <br />
+          Advith and Robert
+        </p>
+      </div>
+    </div>
+    <div class="landing-right">
+      <img src= {{ url_for('static', filename =
+      'images/recruitbotscreenshot.png') }} width="500">
+    </div>
+  </body>
 </html>
