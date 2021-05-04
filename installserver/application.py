@@ -87,7 +87,7 @@ def home():
         "users:read.email",
     ]
     scopes = ",".join(scopes)
-    client_id = "1729142514404.1722977848626"
+    client_id = os.environ["SLACK_BOT_CLIENT_ID"]
     return render_template(
         "index.html",
         state=state,
