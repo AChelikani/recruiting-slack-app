@@ -381,7 +381,8 @@ class ApplicationWatcher:
                 interviewers.append("None")
             else:
                 for interviewer in interview["interviewers"]:
-                    interviewers.append(interviewer["name"])
+                    if interviewer["name"]:
+                        interviewers.append(interviewer["name"])
 
             interview_name = interview["interview"]["name"]
             start_time = interview["start"]["date_time"]

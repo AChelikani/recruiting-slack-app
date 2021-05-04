@@ -290,9 +290,17 @@ def panel_with_emails(panel_without_emails, user_id_to_email_map):
         if person["id"] in panel_ids:
             continue
 
-        panel_ids.add(person["id"])
-        email = user_id_to_email_map[person["id"]]
-        panel.append({"id": person["id"], "name": person["name"], "email": email})
+        if person["id"]:
+            panel_ids.add(person["id"])
+            email = user_id_to_email_map[person["id"]]
+        else:
+            panel.append(
+                {
+                    "id": "not found",
+                    "name": person["name"] if person["name"] else "not found",
+                    "email": "not found",
+                }
+            )
 
     return panel
 

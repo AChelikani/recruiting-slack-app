@@ -6,7 +6,7 @@ import json
 import boto3
 
 BUCKET = "olive-configs"
-KEYS = ["samsara_test.json", "affinity.json"]
+KEYS = ["samsara_test.json"]
 
 
 def lambda_handler(event, context):
