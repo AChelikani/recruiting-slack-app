@@ -106,7 +106,11 @@ def get_interviewers(interviews, onsite_interview_ids):
         if is_scheduled:
             for interviewer in interview["interviewers"]:
                 interviewers.append(
-                    {"id": interviewer["id"], "name": interviewer["name"]}
+                    {
+                        "id": interviewer["id"],
+                        "name": interviewer["name"],
+                        "email": interviewer["email"],
+                    }
                 )
     return interviewers
 
@@ -276,13 +280,14 @@ def dedup_hiring_managers(interviewers, hiring_managers):
         return hiring_managers
 
     for hiring_manager in hiring_managers:
-        if hiring_manager in interviewers:
+        if hiring_manager["id"] in [person["id"] for person in interviewers]:
             return [hiring_manager]
 
     return hiring_managers
 
 
 def panel_with_emails(panel_without_emails, user_id_to_email_map):
+    # Some members on the panel may have emails already populated.
     panel_ids = set()
     panel = []
 
@@ -293,6 +298,14 @@ def panel_with_emails(panel_without_emails, user_id_to_email_map):
         if person["id"]:
             panel_ids.add(person["id"])
             email = user_id_to_email_map[person["id"]]
+        elif person["email"]:
+            panel.append(
+                {
+                    "id": "not found",
+                    "name": person["name"] if person["name"] else "not found",
+                    "email": person["email"],
+                }
+            )
         else:
             panel.append(
                 {

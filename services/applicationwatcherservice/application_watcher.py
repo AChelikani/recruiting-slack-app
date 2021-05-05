@@ -256,7 +256,10 @@ class ApplicationWatcher:
         return
 
     def _construct_missing_persons_message(self, persons_not_found):
-        names = [p["name"] for p in persons_not_found]
+        names = [
+            p["name"] if p["name"] != "not found" else p["email"]
+            for p in persons_not_found
+        ]
         msg = "Please invite {} to channel manually.".format(", ".join(names))
         blocks = [
             {
@@ -383,6 +386,10 @@ class ApplicationWatcher:
                 for interviewer in interview["interviewers"]:
                     if interviewer["name"]:
                         interviewers.append(interviewer["name"])
+                    elif interviewer["email"]:
+                        # Use their email alias as their name if name not found.
+                        email = interview["email"]
+                        interviewers.append(email[: email.find("@")])
 
             interview_name = interview["interview"]["name"]
             start_time = interview["start"]["date_time"]
