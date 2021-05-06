@@ -88,12 +88,13 @@ class ApplicationWatcher:
         jobs = []
         if department_ids:
             for id in department_ids:
-                jobs = self.gh_client.get_jobs(department_id=id)
+                dept_jobs = self.gh_client.get_jobs(department_id=id)
                 print(
                     "Fetched {} jobs for department {}".format(
-                        len(jobs) if jobs else 0, id
+                        len(dept_jobs) if jobs else 0, id
                     )
                 )
+                jobs.extend(dept_jobs)
         else:
             jobs = self.gh_client.get_jobs()
 
