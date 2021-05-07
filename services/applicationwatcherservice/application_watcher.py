@@ -258,7 +258,7 @@ class ApplicationWatcher:
 
     def _construct_missing_persons_message(self, persons_not_found):
         names = [
-            p["name"] if p["name"] != "not found" else p["email"]
+            p["name"] if p["name"] != "Not Found" else p["email"]
             for p in persons_not_found
         ]
         msg = "Please invite {} to channel manually.".format(", ".join(names))
@@ -285,10 +285,10 @@ class ApplicationWatcher:
     ):
 
         candidate_contact = ghutils.get_candidate_contact(candidate)
-        recruiter_name = "Not found"
-        coordinator_name = "Not found"
+        recruiter_name = "Not Found"
+        coordinator_name = "Not Found"
         hiring_manager_names = (
-            " & ".join([m["name"] for m in hiring_managers]) or "Not found"
+            " & ".join([m["name"] for m in hiring_managers]) or "Not Found"
         )
 
         if candidate["recruiter"] and candidate["recruiter"]["name"]:
@@ -334,7 +334,7 @@ class ApplicationWatcher:
                     "text": "Interview {} {} for {}".format(
                         candidate["first_name"].capitalize(),
                         candidate["last_name"].capitalize(),
-                        job["name"] if job["name"] else "Job not found",
+                        job["name"] if job["name"] else "Job Not Found",
                     ),
                     "emoji": True,
                 },

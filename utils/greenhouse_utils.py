@@ -169,7 +169,7 @@ def get_candidate_contact(candidate):
     elif email:
         return email
     else:
-        return "Not found"
+        return "Not Found"
 
 
 def get_candidate_phone(candidate):
@@ -301,24 +301,24 @@ def panel_with_emails(panel_without_emails, user_id_to_email_map):
             panel.append(
                 {
                     "id": person["id"],
-                    "name": person["name"] if person["name"] else "not found",
-                    "email": person["email"] if person["email"] else "not found",
+                    "name": person["name"] if person["name"] else "Not Found",
+                    "email": person["email"] if person["email"] else "Not Found",
                 }
             )
         elif person["email"]:
             panel.append(
                 {
-                    "id": "not found",
-                    "name": person["name"] if person["name"] else "not found",
+                    "id": "Not Found",
+                    "name": person["name"] if person["name"] else "Not Found",
                     "email": person["email"],
                 }
             )
         else:
             panel.append(
                 {
-                    "id": "not found",
-                    "name": person["name"] if person["name"] else "not found",
-                    "email": "not found",
+                    "id": "Not Found",
+                    "name": person["name"] if person["name"] else "Not Found",
+                    "email": "Not Found",
                 }
             )
 
