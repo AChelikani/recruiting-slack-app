@@ -105,6 +105,8 @@ def get_interviewers(interviews, onsite_interview_ids):
 
         if is_scheduled:
             for interviewer in interview["interviewers"]:
+                # External users (those without id and name) can be added
+                # to Greenhouse interview panels. So some of these values may be null.
                 interviewers.append(
                     {
                         "id": interviewer["id"],
@@ -292,35 +294,24 @@ def panel_with_emails(panel_without_emails, user_id_to_email_map):
     panel = []
 
     for person in panel_without_emails:
-        if person["id"] in panel_ids:
+        id = person.get("id")
+        name = person.get("name", "Not Found") or "Not Found"
+        email = person.get("email", "Not Found") or "Not Found"
+
+        if id in panel_ids:
             continue
 
-        if person["id"]:
-            panel_ids.add(person["id"])
-            email = user_id_to_email_map[person["id"]]
-            panel.append(
-                {
-                    "id": person["id"],
-                    "name": person["name"] if person["name"] else "Not Found",
-                    "email": person["email"] if person["email"] else "Not Found",
-                }
-            )
-        elif person["email"]:
-            panel.append(
-                {
-                    "id": "Not Found",
-                    "name": person["name"] if person["name"] else "Not Found",
-                    "email": person["email"],
-                }
-            )
-        else:
-            panel.append(
-                {
-                    "id": "Not Found",
-                    "name": person["name"] if person["name"] else "Not Found",
-                    "email": "Not Found",
-                }
-            )
+        if id:
+            panel_ids.add(id)
+            email = user_id_to_email_map.get(id) or "Not Found"
+
+        panel.append(
+            {
+                "id": id or "Not Found",
+                "name": name,
+                "email": email,
+            }
+        )
 
     return panel
 

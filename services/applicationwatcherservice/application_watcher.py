@@ -231,7 +231,7 @@ class ApplicationWatcher:
         self.slack_client.invite_users_to_channel(channel_id, slack_user_ids)
         print("Panel invited... Members: {}".format([p["name"] for p in panel]))
 
-        # Post invite missing persons into channel message.
+        # Post invite missing persons message into channel.
         if persons_not_found:
             blocks = self._construct_missing_persons_message(persons_not_found)
             self.slack_client.post_message_to_channel(
