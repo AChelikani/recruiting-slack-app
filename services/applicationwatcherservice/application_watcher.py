@@ -352,11 +352,18 @@ class ApplicationWatcher:
                     ),
                 },
             },
-            {
-                "type": "actions",
-                "elements": action_elements,
-            },
-            {"type": "divider"},
+        ]
+
+        if action_elements:
+            blocks.append(
+                {
+                    "type": "actions",
+                    "elements": action_elements,
+                }
+            )
+
+        blocks.append({"type": "divider"})
+        blocks.append(
             {
                 "type": "context",
                 "elements": [
@@ -367,8 +374,8 @@ class ApplicationWatcher:
                         ),
                     }
                 ],
-            },
-        ]
+            }
+        )
 
         interview_counter = 1
         for interview in interviews:
