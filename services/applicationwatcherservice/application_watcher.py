@@ -145,7 +145,9 @@ class ApplicationWatcher:
                 ] = self.gh_client.get_job_stage(job_stage_id)
             job_stage = job_stage_id_to_job_stage_map[job_stage_id]
 
-            if ghutils.onsite_is_tomorrow(job_stage, interviews, timestamp):
+            if ghutils.onsite_is_tomorrow(
+                job_stage, interviews, timestamp, self.config.min_interviews_for_channel
+            ):
                 self._handle_new_onsite(
                     app,
                     interviews,

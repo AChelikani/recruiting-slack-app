@@ -52,7 +52,7 @@ def get_onsite_interviews(job_stage, interviews):
     ]
 
 
-def onsite_is_tomorrow(job_stage, interviews, timestamp):
+def onsite_is_tomorrow(job_stage, interviews, timestamp, min_interviews_for_channel):
     """
     1. Onsite (single job stage) is across one or multiple days, but all interviews are scheduled upfront
         - Only one channel will be made the night before the day of the first onsite. All interviews (including those for future days)
@@ -78,7 +78,10 @@ def onsite_is_tomorrow(job_stage, interviews, timestamp):
         return False
 
     onsite_interviews = get_onsite_interviews(job_stage, interviews)
-    if len(onsite_interviews) == 0:
+    if (
+        len(onsite_interviews) == 0
+        or len(onsite_interviews) < min_interviews_for_channel
+    ):
         return False
 
     onsite_first_interview_date = get_earliest_interview_datetime(onsite_interviews)
