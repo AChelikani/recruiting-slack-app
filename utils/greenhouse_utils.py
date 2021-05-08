@@ -53,6 +53,26 @@ def get_onsite_interviews(job_stage, interviews):
 
 
 def onsite_is_tomorrow(job_stage, interviews, timestamp):
+    """
+    1. Onsite (single job stage) is across one or multiple days, but all interviews are scheduled upfront
+        - Only one channel will be made the night before the day of the first onsite. All interviews (including those for future days)
+        will show up in channel.
+
+    2. Onsite (single job stage) is across multiple days, but only some of the interviews are scheduled upfront
+        - Only one channel will be made the night before the day of the first scheduled onsite. The non-scheduled interviews will not appear
+        and will not be populated even once scheduled. Once the remaining interviews are scheduled, a new channel will not be created.
+
+    3. Onsite (multiple job stages) and each job stage (ex. onsite #1 and onsite #2) interviews are scheduled as the candidate reaches that stage
+        - One channel will be made the night before each job stage, containing the set of already scheduled interviews for that stage.
+
+    4. Onsite (single job stage) interviews are scheduled and rescheduled (before channel creation aka. before night before)
+        - One channel will be made the night before the first scheduled interview containing the most recent information.
+
+    5. Onsite (single job stage) interviews are scheduled and rescheduled day-of or in the middle of a multi day onsite (after channel creation).
+        - A new channel will not be created. One channel will be created the night before the first scheduled onsite. Any reschedules after the
+        channel is made will not be reflected in the channel schedule. Any reschedules (within the same job stage) will not cause a new channel
+        to be created.
+    """
     if interviews is None:
         print("No interviews ...")
         return False
@@ -143,6 +163,7 @@ def get_earliest_interview_datetime(interviews):
         return None
 
     for interview in interviews:
+        print(interview["interview"]["name"] + " at " + interview["start"]["date_time"])
         if interview["start"]["date_time"] < date:
             date = interview["start"]["date_time"]
 

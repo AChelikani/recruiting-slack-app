@@ -10,7 +10,6 @@ from services.applicationwatcherservice.all_orgs_application_watcher import (
 from datetime import date
 import json
 import os
-import tokens
 
 tokens.set_tokens()
 

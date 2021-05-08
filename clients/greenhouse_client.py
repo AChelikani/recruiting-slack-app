@@ -75,6 +75,16 @@ class GreenhouseClient:
 
         return r.json()
 
+    def get_application(self, id):
+        url = "{}/applications/{}".format(self.base_url, id)
+        r = requests.get(url, auth=(self.token, ""))
+        self._handle_rate_limit(r)
+        if r.status_code >= 400:
+            print(r.text)
+            return None
+
+        return r.json()
+
     def get_applications_by_job(self, timestamp, job_id):
         """
         Fetch all active applications.
@@ -121,16 +131,6 @@ class GreenhouseClient:
 
     def get_departments(self):
         url = "{}/departments".format(self.base_url)
-        r = requests.get(url, auth=(self.token, ""))
-        self._handle_rate_limit(r)
-        if r.status_code >= 400:
-            print(r.text)
-            return None
-
-        return r.json()
-
-    def get_scorecards_for_application(self, application_id):
-        url = "{}/applications/{}/scorecards".format(self.base_url, application_id)
         r = requests.get(url, auth=(self.token, ""))
         self._handle_rate_limit(r)
         if r.status_code >= 400:
