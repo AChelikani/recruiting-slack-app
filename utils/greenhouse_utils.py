@@ -167,7 +167,6 @@ def get_earliest_interview_datetime(interviews):
         return None
 
     for interview in interviews:
-        print(interview["interview"]["name"] + " at " + interview["start"]["date_time"])
         if interview["start"]["date_time"] < date:
             date = interview["start"]["date_time"]
 
