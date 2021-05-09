@@ -24,7 +24,7 @@ def TestOnsiteIsTomorrow(gh_token):
         job_stage = ghclient.get_job_stage(app["current_stage"]["id"])
         interviews = ghclient.get_scheduled_interviews(app["id"])
 
-        is_onsite_tomorrow = ghutils.onsite_is_tomorrow(
+        is_onsite_tomorrow = ghutils.valid_onsite_is_tomorrow(
             job_stage, interviews, test_case["timestamp"]
         )
         assert is_onsite_tomorrow == test_case["result"], test_case["description"]

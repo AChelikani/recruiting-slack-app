@@ -52,7 +52,9 @@ def get_onsite_interviews(job_stage, interviews):
     ]
 
 
-def onsite_is_tomorrow(job_stage, interviews, timestamp, min_interviews_for_channel):
+def valid_onsite_is_tomorrow(
+    job_stage, interviews, timestamp, min_interviews_for_channel
+):
     """
     1. Onsite (single job stage) is across one or multiple days, but all interviews are scheduled upfront
         - Only one channel will be made the night before the day of the first onsite. All interviews (including those for future days)
@@ -78,10 +80,8 @@ def onsite_is_tomorrow(job_stage, interviews, timestamp, min_interviews_for_chan
         return False
 
     onsite_interviews = get_onsite_interviews(job_stage, interviews)
-    if (
-        len(onsite_interviews) == 0
-        or len(onsite_interviews) < min_interviews_for_channel
-    ):
+    # Do not create onsite channel if there are too few interviews.
+    if len(onsite_interviews) < min_interviews_for_channel:
         return False
 
     onsite_first_interview_date = get_earliest_interview_datetime(onsite_interviews)
@@ -90,6 +90,7 @@ def onsite_is_tomorrow(job_stage, interviews, timestamp, min_interviews_for_chan
     target_date = dateutil.parser.isoparse(timestamp)
     one_day_after_target_date = target_date + datetime.timedelta(days=1)
 
+    # Earliest scheduled interview must be tomorrow for channel to be created.
     return (
         target_date.date().isoformat() < onsite_first_interview_date.date().isoformat()
         and onsite_first_interview_date.date().isoformat()
@@ -184,7 +185,7 @@ def get_first_onsite_interview_date_from_scheduled_interviews(
     return "{}-{}".format(month, day)
 
 
-def get_candidate_contact(candidate):
+def get_formatted_candidate_contact(candidate):
     email = get_candidate_email(candidate)
     phone = get_candidate_phone(candidate)
 

@@ -145,7 +145,8 @@ class ApplicationWatcher:
                 ] = self.gh_client.get_job_stage(job_stage_id)
             job_stage = job_stage_id_to_job_stage_map[job_stage_id]
 
-            if ghutils.onsite_is_tomorrow(
+            # Determine if there is a valid onsite tomorrow.
+            if ghutils.valid_onsite_is_tomorrow(
                 job_stage, interviews, timestamp, self.config.min_interviews_for_channel
             ):
                 self._handle_new_onsite(
@@ -200,12 +201,11 @@ class ApplicationWatcher:
 
         # Invite: recruiter, recruiting coordinator, interviewers, and hiring managers.
         gh_recruiters = []
-        if self.config.include_recruiter:
-            recruiter = ghutils.get_recruiter(candidate)
-            if recruiter is not None:
-                gh_recruiters.append(recruiter)
+        recruiter = ghutils.get_recruiter(candidate)
+        if self.config.include_recruiter and recruiter:
+            gh_recruiters.append(recruiter)
         coordinator = ghutils.get_coordinator(candidate)
-        if coordinator is not None:
+        if coordinator:
             gh_recruiters.append(coordinator)
 
         gh_interviwers = ghutils.get_interviewers(interviews, onsite_interview_ids)
@@ -254,8 +254,7 @@ class ApplicationWatcher:
         self.slack_client.post_message_to_channel(
             channel_id, blocks, "Unable to post schedule message."
         )
-        print("Schedule posted...")
-        print("\n")
+        print("Schedule posted...\n")
         return
 
     def _construct_missing_persons_message(self, persons_not_found):
@@ -286,7 +285,7 @@ class ApplicationWatcher:
         hiring_managers,
     ):
 
-        candidate_contact = ghutils.get_candidate_contact(candidate)
+        candidate_contact = ghutils.get_formatted_candidate_contact(candidate)
         recruiter_name = "Not Found"
         coordinator_name = "Not Found"
         hiring_manager_names = (
@@ -383,9 +382,9 @@ class ApplicationWatcher:
         for interview in interviews:
             if not interview["interview"]:
                 continue
-
             if interview["interview"]["id"] not in onsite_interview_ids:
                 continue
+            # Interview status can be: scheduled, awaiting_feedback, or complete.
             if interview["status"] != "scheduled":
                 continue
 
