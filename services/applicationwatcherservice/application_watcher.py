@@ -88,12 +88,13 @@ class ApplicationWatcher:
         jobs = []
         if department_ids:
             for id in department_ids:
-                jobs = self.gh_client.get_jobs(department_id=id)
+                dept_jobs = self.gh_client.get_jobs(department_id=id)
                 print(
                     "Fetched {} jobs for department {}".format(
-                        len(jobs) if jobs else 0, id
+                        len(dept_jobs) if jobs else 0, id
                     )
                 )
+                jobs.extend(dept_jobs)
         else:
             jobs = self.gh_client.get_jobs()
 
@@ -144,7 +145,10 @@ class ApplicationWatcher:
                 ] = self.gh_client.get_job_stage(job_stage_id)
             job_stage = job_stage_id_to_job_stage_map[job_stage_id]
 
-            if ghutils.onsite_is_tomorrow(job_stage, interviews, timestamp):
+            # Determine if there is a valid onsite tomorrow.
+            if ghutils.valid_onsite_is_tomorrow(
+                job_stage, interviews, timestamp, self.config.min_interviews_for_channel
+            ):
                 self._handle_new_onsite(
                     app,
                     interviews,
@@ -197,12 +201,11 @@ class ApplicationWatcher:
 
         # Invite: recruiter, recruiting coordinator, interviewers, and hiring managers.
         gh_recruiters = []
-        if self.config.include_recruiter:
-            recruiter = ghutils.get_recruiter(candidate)
-            if recruiter is not None:
-                gh_recruiters.append(recruiter)
+        recruiter = ghutils.get_recruiter(candidate)
+        if self.config.include_recruiter and recruiter:
+            gh_recruiters.append(recruiter)
         coordinator = ghutils.get_coordinator(candidate)
-        if coordinator is not None:
+        if coordinator:
             gh_recruiters.append(coordinator)
 
         gh_interviwers = ghutils.get_interviewers(interviews, onsite_interview_ids)
@@ -230,7 +233,7 @@ class ApplicationWatcher:
         self.slack_client.invite_users_to_channel(channel_id, slack_user_ids)
         print("Panel invited... Members: {}".format([p["name"] for p in panel]))
 
-        # Post invite missing persons into channel message.
+        # Post invite missing persons message into channel.
         if persons_not_found:
             blocks = self._construct_missing_persons_message(persons_not_found)
             self.slack_client.post_message_to_channel(
@@ -251,12 +254,14 @@ class ApplicationWatcher:
         self.slack_client.post_message_to_channel(
             channel_id, blocks, "Unable to post schedule message."
         )
-        print("Schedule posted...")
-        print("\n")
+        print("Schedule posted...\n")
         return
 
     def _construct_missing_persons_message(self, persons_not_found):
-        names = [p["name"] for p in persons_not_found]
+        names = [
+            p["name"] if p["name"] != "Not Found" else p["email"]
+            for p in persons_not_found
+        ]
         msg = "Please invite {} to channel manually.".format(", ".join(names))
         blocks = [
             {
@@ -280,11 +285,11 @@ class ApplicationWatcher:
         hiring_managers,
     ):
 
-        candidate_contact = ghutils.get_candidate_contact(candidate)
-        recruiter_name = "Not found"
-        coordinator_name = "Not found"
+        candidate_contact = ghutils.get_formatted_candidate_contact(candidate)
+        recruiter_name = "Not Found"
+        coordinator_name = "Not Found"
         hiring_manager_names = (
-            " & ".join([m["name"] for m in hiring_managers]) or "Not found"
+            " & ".join([m["name"] for m in hiring_managers]) or "Not Found"
         )
 
         if candidate["recruiter"] and candidate["recruiter"]["name"]:
@@ -330,7 +335,7 @@ class ApplicationWatcher:
                     "text": "Interview {} {} for {}".format(
                         candidate["first_name"].capitalize(),
                         candidate["last_name"].capitalize(),
-                        job["name"] if job["name"] else "Job not found",
+                        job["name"] if job["name"] else "Job Not Found",
                     ),
                     "emoji": True,
                 },
@@ -348,11 +353,18 @@ class ApplicationWatcher:
                     ),
                 },
             },
-            {
-                "type": "actions",
-                "elements": action_elements,
-            },
-            {"type": "divider"},
+        ]
+
+        if action_elements:
+            blocks.append(
+                {
+                    "type": "actions",
+                    "elements": action_elements,
+                }
+            )
+
+        blocks.append({"type": "divider"})
+        blocks.append(
             {
                 "type": "context",
                 "elements": [
@@ -363,16 +375,16 @@ class ApplicationWatcher:
                         ),
                     }
                 ],
-            },
-        ]
+            }
+        )
 
         interview_counter = 1
         for interview in interviews:
             if not interview["interview"]:
                 continue
-
             if interview["interview"]["id"] not in onsite_interview_ids:
                 continue
+            # Interview status can be: scheduled, awaiting_feedback, or complete.
             if interview["status"] != "scheduled":
                 continue
 
@@ -381,7 +393,12 @@ class ApplicationWatcher:
                 interviewers.append("None")
             else:
                 for interviewer in interview["interviewers"]:
-                    interviewers.append(interviewer["name"])
+                    if interviewer["name"]:
+                        interviewers.append(interviewer["name"])
+                    elif interviewer["email"]:
+                        # Use their email alias as their name if name not found.
+                        email = interview["email"]
+                        interviewers.append(email[: email.find("@")])
 
             interview_name = interview["interview"]["name"]
             start_time = interview["start"]["date_time"]

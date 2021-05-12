@@ -52,13 +52,36 @@ def get_onsite_interviews(job_stage, interviews):
     ]
 
 
-def onsite_is_tomorrow(job_stage, interviews, timestamp):
+def valid_onsite_is_tomorrow(
+    job_stage, interviews, timestamp, min_interviews_for_channel
+):
+    """
+    1. Onsite (single job stage) is across one or multiple days, but all interviews are scheduled upfront
+        - Only one channel will be made the night before the day of the first onsite. All interviews (including those for future days)
+        will show up in channel.
+
+    2. Onsite (single job stage) is across multiple days, but only some of the interviews are scheduled upfront
+        - Only one channel will be made the night before the day of the first scheduled onsite. The non-scheduled interviews will not appear
+        and will not be populated even once scheduled. Once the remaining interviews are scheduled, a new channel will not be created.
+
+    3. Onsite (multiple job stages) and each job stage (ex. onsite #1 and onsite #2) interviews are scheduled as the candidate reaches that stage
+        - One channel will be made the night before each job stage, containing the set of already scheduled interviews for that stage.
+
+    4. Onsite (single job stage) interviews are scheduled and rescheduled (before channel creation aka. before night before)
+        - One channel will be made the night before the first scheduled interview containing the most recent information.
+
+    5. Onsite (single job stage) interviews are scheduled and rescheduled day-of or in the middle of a multi day onsite (after channel creation).
+        - A new channel will not be created. One channel will be created the night before the first scheduled onsite. Any reschedules after the
+        channel is made will not be reflected in the channel schedule. Any reschedules (within the same job stage) will not cause a new channel
+        to be created.
+    """
     if interviews is None:
         print("No interviews ...")
         return False
 
     onsite_interviews = get_onsite_interviews(job_stage, interviews)
-    if len(onsite_interviews) == 0:
+    # Do not create onsite channel if there are too few interviews.
+    if len(onsite_interviews) < min_interviews_for_channel:
         return False
 
     onsite_first_interview_date = get_earliest_interview_datetime(onsite_interviews)
@@ -67,6 +90,7 @@ def onsite_is_tomorrow(job_stage, interviews, timestamp):
     target_date = dateutil.parser.isoparse(timestamp)
     one_day_after_target_date = target_date + datetime.timedelta(days=1)
 
+    # Earliest scheduled interview must be tomorrow for channel to be created.
     return (
         target_date.date().isoformat() < onsite_first_interview_date.date().isoformat()
         and onsite_first_interview_date.date().isoformat()
@@ -105,8 +129,14 @@ def get_interviewers(interviews, onsite_interview_ids):
 
         if is_scheduled:
             for interviewer in interview["interviewers"]:
+                # External users (those without id and name) can be added
+                # to Greenhouse interview panels. So some of these values may be null.
                 interviewers.append(
-                    {"id": interviewer["id"], "name": interviewer["name"]}
+                    {
+                        "id": interviewer["id"],
+                        "name": interviewer["name"],
+                        "email": interviewer["email"],
+                    }
                 )
     return interviewers
 
@@ -154,7 +184,7 @@ def get_first_onsite_interview_date_from_scheduled_interviews(
     return "{}-{}".format(month, day)
 
 
-def get_candidate_contact(candidate):
+def get_formatted_candidate_contact(candidate):
     email = get_candidate_email(candidate)
     phone = get_candidate_phone(candidate)
 
@@ -165,7 +195,7 @@ def get_candidate_contact(candidate):
     elif email:
         return email
     else:
-        return "Not found"
+        return "Not Found"
 
 
 def get_candidate_phone(candidate):
@@ -276,23 +306,36 @@ def dedup_hiring_managers(interviewers, hiring_managers):
         return hiring_managers
 
     for hiring_manager in hiring_managers:
-        if hiring_manager in interviewers:
+        if hiring_manager["id"] in [person["id"] for person in interviewers]:
             return [hiring_manager]
 
     return hiring_managers
 
 
 def panel_with_emails(panel_without_emails, user_id_to_email_map):
+    # Some members on the panel may have emails already populated.
     panel_ids = set()
     panel = []
 
     for person in panel_without_emails:
-        if person["id"] in panel_ids:
+        id = person.get("id")
+        name = person.get("name", "Not Found") or "Not Found"
+        email = person.get("email", "Not Found") or "Not Found"
+
+        if id in panel_ids:
             continue
 
-        panel_ids.add(person["id"])
-        email = user_id_to_email_map[person["id"]]
-        panel.append({"id": person["id"], "name": person["name"], "email": email})
+        if id:
+            panel_ids.add(id)
+            email = user_id_to_email_map.get(id) or "Not Found"
+
+        panel.append(
+            {
+                "id": id or "Not Found",
+                "name": name,
+                "email": email,
+            }
+        )
 
     return panel
 

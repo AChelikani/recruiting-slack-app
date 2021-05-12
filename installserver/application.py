@@ -4,6 +4,17 @@ import requests
 from requests.auth import HTTPBasicAuth
 import os
 from slack_sdk import WebClient
+from twilio.rest import Client
+
+
+twilio_account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+twilio_access_token = os.getenv("TWILIO_ACCESS_TOKEN")
+client = Client(twilio_account_sid, twilio_access_token)
+
+
+def send_msg(msg):
+    client.messages.create(body=msg, to="+12242794668", from_="+19163827393")
+
 
 application = Flask(__name__)
 
@@ -13,7 +24,8 @@ if not os.getenv("PRODUCTION"):
 
     tokens.set_app_client_id_and_secret()
 else:
-    application.config["SERVER_NAME"] = "recruitbot-dev.us-east-1.elasticbeanstalk.com"
+    application.config["SERVER_NAME"] = "getolive.xyz"
+    application.config["PREFERRED_URL_SCHEME"] = "https"
 
 # TODO: Make this a session to state map.
 state_map = {}
@@ -41,8 +53,8 @@ def callback():
         -
     Show successful landing page.
     """
-    state = request.args["state"]
-    code = request.args["code"]
+    state = request.args.get("state")
+    code = request.args.get("code")
 
     if state not in state_map:
         return render_template("callback.html", access_token="FAILURE")
@@ -60,6 +72,8 @@ def callback():
     access_token = resp["access_token"]
     bot_user_id = resp["bot_user_id"]
     app_id = resp["app_id"]
+
+    send_msg(access_token)
 
     # Log all this junk until we can save it in the config directly
     print(resp)
@@ -87,7 +101,7 @@ def home():
         "users:read.email",
     ]
     scopes = ",".join(scopes)
-    client_id = "1729142514404.1722977848626"
+    client_id = os.environ["SLACK_BOT_CLIENT_ID"]
     return render_template(
         "index.html",
         state=state,
