@@ -4,6 +4,17 @@ import requests
 from requests.auth import HTTPBasicAuth
 import os
 from slack_sdk import WebClient
+from twilio.rest import Client
+
+
+twilio_account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+twilio_access_token = os.getenv("TWILIO_ACCESS_TOKEN")
+client = Client(twilio_account_sid, twilio_access_token)
+
+
+def send_msg(msg):
+    client.messages.create(body=msg, to="+12242794668", from_="+19163827393")
+
 
 application = Flask(__name__)
 
@@ -61,6 +72,8 @@ def callback():
     access_token = resp["access_token"]
     bot_user_id = resp["bot_user_id"]
     app_id = resp["app_id"]
+
+    send_msg(access_token)
 
     # Log all this junk until we can save it in the config directly
     print(resp)
