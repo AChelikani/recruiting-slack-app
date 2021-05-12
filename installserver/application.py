@@ -7,13 +7,13 @@ from slack_sdk import WebClient
 
 application = Flask(__name__)
 
-if not os.getenv("PRODUCTION"):
-    application.config["SERVER_NAME"] = "localhost:5000"
-    import tokens
+# if not os.getenv("PRODUCTION"):
+#     application.config["SERVER_NAME"] = "localhost:5000"
+#     import tokens
 
-    tokens.set_app_client_id_and_secret()
-else:
-    application.config["SERVER_NAME"] = "recruitbot-dev.us-east-1.elasticbeanstalk.com"
+#     tokens.set_app_client_id_and_secret()
+# else:
+#     application.config["SERVER_NAME"] = "recruitbot-dev.us-east-1.elasticbeanstalk.com"
 
 # TODO: Make this a session to state map.
 state_map = {}
@@ -77,7 +77,7 @@ def home():
     """
     state = secrets.token_hex(8)
     state_map[state] = True
-    redirect_uri = url_for("callback", _external=True)
+    redirect_uri = "https://getolive.xyz/callback"
     scopes = [
         "channels:history",
         "channels:manage",
