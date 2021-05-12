@@ -64,7 +64,7 @@ def callback():
     # Log all this junk until we can save it in the config directly
     print(resp)
 
-    return render_template("callback.html", access_token=access_token)
+    return render_template("callback.html")
 
 
 @application.route("/")
