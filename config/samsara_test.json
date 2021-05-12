@@ -8,6 +8,6 @@
     "departments": ["Software Engineering"],
     "debugEmails": ["advith.chelikani@gmail.com", "robert.km.eng@gmail.com"],
     "includeRecruiter": true,
-    "excludeJobs": ["VP"],
+    "excludeJobs": ["VP", "Director", "Manager"],
     "minInterviewsForChannel": 2
 }
