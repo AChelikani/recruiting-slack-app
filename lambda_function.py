@@ -6,14 +6,15 @@ import json
 import boto3
 
 BUCKET = "olive-configs"
-KEYS = ["samsara_test.json", "affinity.json"]
 
 
 def lambda_handler(event, context):
     s3 = boto3.client("s3")
     configs = []
 
-    for key in KEYS:
+    keys = event["configs"]
+
+    for key in keys:
         obj = s3.get_object(Bucket=BUCKET, Key=key)
         config_bytes = obj["Body"].read().decode()
         json_config = json.loads(config_bytes)
