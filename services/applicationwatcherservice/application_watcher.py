@@ -187,10 +187,14 @@ class ApplicationWatcher:
         )
         onsite_interview_ids = interview_id_to_interview_kit_id.keys()
 
+        preferred_timezone = ghutils.get_preferred_timezone(
+            job, self.config.default_timezone, self.config.override_timezones
+        )
+
         # Create new onsite channel for candidate.
         interview_date = (
             ghutils.get_first_onsite_interview_date_from_scheduled_interviews(
-                job_stage, interviews, self.config.default_timezone
+                job_stage, interviews, preferred_timezone
             )
         )
         channel_name = slackutils.generate_new_onsite_channel_name(
@@ -298,6 +302,10 @@ class ApplicationWatcher:
         if candidate["coordinator"] and candidate["coordinator"]["name"]:
             coordinator_name = candidate["coordinator"]["name"]
 
+        preferred_timezone = ghutils.get_preferred_timezone(
+            job, self.config.default_timezone, self.config.override_timezones
+        )
+
         # Populate buttons.
         action_elements = []
 
@@ -371,7 +379,7 @@ class ApplicationWatcher:
                     {
                         "type": "mrkdwn",
                         "text": "Note: All times below are in *{}*.".format(
-                            self.config.default_timezone
+                            preferred_timezone
                         ),
                     }
                 ],
@@ -403,9 +411,7 @@ class ApplicationWatcher:
             interview_name = interview["interview"]["name"]
             start_time = interview["start"]["date_time"]
             end_time = interview["end"]["date_time"]
-            _, month, day, _, _ = utils.parse_time(
-                start_time, self.config.default_timezone
-            )
+            _, month, day, _, _ = utils.parse_time(start_time, preferred_timezone)
 
             interview_kit_id = interview_id_to_interview_kit_id[
                 interview["interview"]["id"]
@@ -420,8 +426,8 @@ class ApplicationWatcher:
             display_time = "{}/{} {}-{}".format(
                 month,
                 day,
-                utils.format_time(start_time, self.config.default_timezone),
-                utils.format_time(end_time, self.config.default_timezone),
+                utils.format_time(start_time, preferred_timezone),
+                utils.format_time(end_time, preferred_timezone),
             )
             display_interviewers = " & ".join(interviewers)
             interview_text = ":{}: {}{} |  {}  |  {}".format(

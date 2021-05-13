@@ -22,6 +22,11 @@ class Config:
         # JSON: defaultTimezone (string)
         self.default_timezone = ""
 
+        # Override timezones if the job is in a specific location.
+        # Should be valid pytz timezone, ex. "US/Pacific".
+        # JSON: overrideTimezones (map of string to string)
+        self.override_timezones = {}
+
         # Greenhouse API token.
         # JSON: greenhouseToken (string)
         self.greenhouse_token = ""
@@ -62,6 +67,9 @@ class Config:
     def set_default_timezone(self, default_timezone):
         self.default_timezone = default_timezone
 
+    def set_override_timezones(self, override_timezones):
+        self.override_timezones = override_timezones
+
     def set_greenhouse_token(self, greenhouse_token):
         self.greenhouse_token = greenhouse_token
 
@@ -100,6 +108,9 @@ def parse_config(json):
 
     if "defaultTimezone" in json:
         config.set_default_timezone(json["defaultTimezone"])
+
+    if "overrideTimezones" in json:
+        config.set_override_timezones(json["overrideTimezones"])
 
     if "greenhouseToken" in json:
         # NOTE: Value in config JSON is env variable key.
