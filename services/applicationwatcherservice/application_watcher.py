@@ -190,7 +190,7 @@ class ApplicationWatcher:
         # Create new onsite channel for candidate.
         interview_date = (
             ghutils.get_first_onsite_interview_date_from_scheduled_interviews(
-                job_stage, interviews, self.config.timezone
+                job_stage, interviews, self.config.default_timezone
             )
         )
         channel_name = slackutils.generate_new_onsite_channel_name(
@@ -371,7 +371,7 @@ class ApplicationWatcher:
                     {
                         "type": "mrkdwn",
                         "text": "Note: All times below are in *{}*.".format(
-                            self.config.timezone
+                            self.config.default_timezone
                         ),
                     }
                 ],
@@ -403,7 +403,9 @@ class ApplicationWatcher:
             interview_name = interview["interview"]["name"]
             start_time = interview["start"]["date_time"]
             end_time = interview["end"]["date_time"]
-            _, month, day, _, _ = utils.parse_time(start_time, self.config.timezone)
+            _, month, day, _, _ = utils.parse_time(
+                start_time, self.config.default_timezone
+            )
 
             interview_kit_id = interview_id_to_interview_kit_id[
                 interview["interview"]["id"]
@@ -418,8 +420,8 @@ class ApplicationWatcher:
             display_time = "{}/{} {}-{}".format(
                 month,
                 day,
-                utils.format_time(start_time, self.config.timezone),
-                utils.format_time(end_time, self.config.timezone),
+                utils.format_time(start_time, self.config.default_timezone),
+                utils.format_time(end_time, self.config.default_timezone),
             )
             display_interviewers = " & ".join(interviewers)
             interview_text = ":{}: {}{} |  {}  |  {}".format(

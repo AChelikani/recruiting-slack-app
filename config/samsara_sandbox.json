@@ -2,7 +2,7 @@
     "name": "Samsara Sandbox",
     "greenhouseSilo": "app2",
     "introMessage": ":wave: Thank you for helping to make Samsara a better place to work.",
-    "timezone": "US/Pacific",
+    "defaultTimezone": "US/Pacific",
     "slackToken": "SLACK_BOT_TOKEN_TEST",
     "greenhouseToken": "GREENHOUSE_API_TOKEN_SANDBOX",
     "departments": ["Engineering"],

@@ -2,7 +2,7 @@
     "name": "Samsara",
     "greenhouseSilo": "app1",
     "introMessage": "Hiring great people ain't easy - thanks for helping Samsara build for the long term :pray:",
-    "timezone": "US/Pacific",
+    "defaultTimezone": "US/Pacific",
     "slackToken": "SLACK_BOT_TOKEN_SAMSARA",
     "greenhouseToken": "GREENHOUSE_API_TOKEN_SAMSARA",
     "departments": ["Software Engineering"],

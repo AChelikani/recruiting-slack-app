@@ -19,8 +19,8 @@ class Config:
 
         # Timezone the organization schedules interviews in.
         # Should be a valid pytz timezone, ex. "US/Pacific".
-        # JSON: timezone (string)
-        self.timezone = ""
+        # JSON: defaultTimezone (string)
+        self.default_timezone = ""
 
         # Greenhouse API token.
         # JSON: greenhouseToken (string)
@@ -59,8 +59,8 @@ class Config:
     def set_intro_message(self, intro_message):
         self.intro_message = intro_message
 
-    def set_timezone(self, timezone):
-        self.timezone = timezone
+    def set_default_timezone(self, default_timezone):
+        self.default_timezone = default_timezone
 
     def set_greenhouse_token(self, greenhouse_token):
         self.greenhouse_token = greenhouse_token
@@ -98,8 +98,8 @@ def parse_config(json):
     if "introMessage" in json:
         config.set_intro_message(json["introMessage"])
 
-    if "timezone" in json:
-        config.set_timezone(json["timezone"])
+    if "defaultTimezone" in json:
+        config.set_default_timezone(json["defaultTimezone"])
 
     if "greenhouseToken" in json:
         # NOTE: Value in config JSON is env variable key.
