@@ -349,20 +349,3 @@ def is_job_excluded(job, exclude_jobs):
             return True
 
     return False
-
-
-def get_preferred_timezone(job, default_timezone, override_timezones):
-    offices = job["offices"]
-    if not offices:
-        return default_timezone
-
-    # If there is only one office the job is in and that office is in the overrides, use that timezone.
-    if len(offices) == 1:
-        office_name = offices[0]["name"]
-        if office_name in override_timezones:
-            return override_timezones[office_name]
-        else:
-            return default_timezone
-
-    # If there are multiple offices the job is in, use default timezone.
-    return default_timezone
