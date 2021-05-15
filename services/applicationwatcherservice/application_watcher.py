@@ -97,6 +97,8 @@ class ApplicationWatcher:
         # Get all open jobs from enabled departments and offices.
         job_id_to_job = {}
         jobs = []
+        # TODO: If jobs are part of multiple offices, they will get marked on multiple runs
+        # of the bot. Channels for them will only get created on the earliest run.
         for office_id in office_ids:
             for department_id in department_ids:
                 dept_office_jobs = self.gh_client.get_jobs(
@@ -104,7 +106,7 @@ class ApplicationWatcher:
                 )
                 print(
                     "Fetched {} jobs for department {}, office {}".format(
-                        len(dept_office_jobs) if jobs else 0,
+                        len(dept_office_jobs) if dept_office_jobs else 0,
                         department_id,
                         office_id,
                     )
