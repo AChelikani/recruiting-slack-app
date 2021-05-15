@@ -1,0 +1,14 @@
+{
+    "name": "Samsara",
+    "greenhouseSilo": "app1",
+    "introMessage": "Hiring great people ain't easy - thanks for helping Samsara build for the long term :pray:",
+    "defaultTimezone": "Europe/London",
+    "slackToken": "SLACK_BOT_TOKEN_SAMSARA",
+    "greenhouseToken": "GREENHOUSE_API_TOKEN_SAMSARA",
+    "departments": ["Software Engineering"],
+    "offices": ["London"],
+    "debugEmails": ["angela.fong@samsara.com"],
+    "includeRecruiter": true,
+    "excludeJobs": ["VP", "Director", "Manager"],
+    "minInterviewsForChannel": 2
+}

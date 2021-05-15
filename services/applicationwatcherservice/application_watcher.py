@@ -83,20 +83,33 @@ class ApplicationWatcher:
 
         print("Department IDs: {}".format(department_ids))
 
-        # Get all open jobs from enabled departments.
+        # Get IDs of enabled offices.
+        office_ids = []
+        offices = self.gh_client.get_offices()
+        if self.config.offices:
+            office_ids = ghutils.get_office_ids_from_names(self.config.offices, offices)
+        elif offices:
+            for office in offices:
+                office_ids.append(office["id"])
+
+        print("Office IDs: {}".format(office_ids))
+
+        # Get all open jobs from enabled departments and offices.
         job_id_to_job = {}
         jobs = []
-        if department_ids:
-            for id in department_ids:
-                dept_jobs = self.gh_client.get_jobs(department_id=id)
+        for office_id in office_ids:
+            for department_id in department_ids:
+                dept_office_jobs = self.gh_client.get_jobs(
+                    department_id=department_id, office_id=office_id
+                )
                 print(
-                    "Fetched {} jobs for department {}".format(
-                        len(dept_jobs) if jobs else 0, id
+                    "Fetched {} jobs for department {}, office {}".format(
+                        len(dept_office_jobs) if jobs else 0,
+                        department_id,
+                        office_id,
                     )
                 )
-                jobs.extend(dept_jobs)
-        else:
-            jobs = self.gh_client.get_jobs()
+                jobs.extend(dept_office_jobs)
 
         for job in jobs:
             if ghutils.is_job_excluded(job, self.config.exclude_jobs):

@@ -34,6 +34,10 @@ class Config:
         # JSON: departments (array of strings)
         self.departments = []
 
+        # Offices for which the bot is enabled.
+        # JSON: offices (array of strings)
+        self.offices = []
+
         # Emails of the slack users to be added to every channel for debugging.
         # JSON: debugEmails (array of strings)
         self.debug_emails = []
@@ -70,6 +74,9 @@ class Config:
 
     def set_departments(self, departments):
         self.departments = departments
+
+    def set_offices(self, offices):
+        self.offices = offices
 
     def set_debug_emails(self, debug_emails):
         self.debug_emails = debug_emails
@@ -111,6 +118,9 @@ def parse_config(json):
 
     if "departments" in json:
         config.set_departments(json["departments"])
+
+    if "offices" in json:
+        config.set_offices(json["offices"])
 
     if "debugEmails" in json:
         config.set_debug_emails(json["debugEmails"])

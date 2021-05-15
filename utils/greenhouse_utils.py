@@ -300,6 +300,15 @@ def get_department_ids_from_names(department_names, departments):
     return ids
 
 
+def get_office_ids_from_names(office_names, offices):
+    ids = []
+    for office in offices:
+        if office["name"] in office_names:
+            ids.append(office["id"])
+
+    return ids
+
+
 def dedup_hiring_managers(interviewers, hiring_managers):
     # If there is more than one hiring manager, only list the one on the panel.
     if len(hiring_managers) == 1:

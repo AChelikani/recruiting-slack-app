@@ -58,10 +58,12 @@ class GreenhouseClient:
 
         return r.json()
 
-    def get_jobs(self, department_id=None):
+    def get_jobs(self, department_id=None, office_id=None):
         extra_payload = {"status": "open"}
         if department_id:
             extra_payload["department_id"] = department_id
+        if office_id:
+            extra_payload["office_id"] = office_id
         url = "{}/jobs".format(self.base_url)
         return self._get_paginated_items(url, payload=extra_payload)
 
@@ -131,6 +133,16 @@ class GreenhouseClient:
 
     def get_departments(self):
         url = "{}/departments".format(self.base_url)
+        r = requests.get(url, auth=(self.token, ""))
+        self._handle_rate_limit(r)
+        if r.status_code >= 400:
+            print(r.text)
+            return None
+
+        return r.json()
+
+    def get_offices(self):
+        url = "{}/offices".format(self.base_url)
         r = requests.get(url, auth=(self.token, ""))
         self._handle_rate_limit(r)
         if r.status_code >= 400:
