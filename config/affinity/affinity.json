@@ -6,6 +6,6 @@
   "slackToken": "SLACK_BOT_TOKEN_AFFINITY",
   "greenhouseToken": "GREENHOUSE_API_TOKEN_AFFINITY",
   "departments": [],
-  "debugEmails": ["reng@affinity.co"],
+  "debugEmails": [],
   "includeRecruiter": false
 }
