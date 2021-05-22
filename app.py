@@ -14,7 +14,7 @@ import os
 tokens.set_tokens()
 
 if __name__ == "__main__":
-    with open("config/samsara/samsara_usa_test.json") as f:
+    with open("config/samsara/samsara_sandbox.json") as f:
         data = json.load(f)
 
     samsaraTestConfig = parse_config(data)

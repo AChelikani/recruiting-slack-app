@@ -385,9 +385,7 @@ class ApplicationWatcher:
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": "Note: All times below are in *{}*.".format(
-                            self.config.default_timezone
-                        ),
+                        "text": "Note: All times below are in *your local timezone*.",
                     }
                 ],
             }
@@ -432,11 +430,27 @@ class ApplicationWatcher:
                 application["id"],
             )
 
-            display_time = "{}/{} {}-{}".format(
-                month,
-                day,
-                utils.format_time(start_time, self.config.default_timezone),
-                utils.format_time(end_time, self.config.default_timezone),
+            formatted_start_time = utils.format_time(
+                start_time, self.config.default_timezone
+            )
+            formatted_end_time = utils.format_time(
+                end_time, self.config.default_timezone
+            )
+
+            display_date = "{}/{}".format(month, day)
+            display_start_time = slackutils.format_timestamp_for_slack(
+                utils.get_unix_ms_time(start_time),
+                formatted_start_time,
+            )
+            display_end_time = slackutils.format_timestamp_for_slack(
+                utils.get_unix_ms_time(end_time),
+                formatted_end_time,
+            )
+
+            display_time = "{} {}-{}".format(
+                display_date,
+                display_start_time,
+                display_end_time,
             )
             display_interviewers = " & ".join(interviewers)
             interview_text = ":{}: {}{} |  {}  |  {}".format(
