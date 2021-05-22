@@ -5,7 +5,7 @@
     "defaultTimezone": "Europe/London",
     "slackToken": "SLACK_BOT_TOKEN_SAMSARA",
     "greenhouseToken": "GREENHOUSE_API_TOKEN_SAMSARA",
-    "departments": ["Software Engineering"],
+    "departments": ["Software Engineering", "Product Design", "Product"],
     "offices": ["London"],
     "debugEmails": ["angela.fong@samsara.com"],
     "includeRecruiter": true,
