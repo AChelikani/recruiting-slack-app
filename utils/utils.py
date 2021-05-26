@@ -1,7 +1,6 @@
 import pytz
 from datetime import datetime
 import time
-from dateutil import parser
 
 
 def parse_time(time_str, timezone):
@@ -51,13 +50,6 @@ def localize_time(time_str, timezone):
     localized_datetime = datetime_object.astimezone(my_timezone)
 
     return localized_datetime.strftime(date_format)
-
-
-def get_unix_ms_time(time_str):
-    # Assume all times are in RFC 3339 UTC.
-    parsed_time = parser.parse(time_str)
-
-    return parsed_time.timestamp()
 
 
 def inject_throttle_delay(secs):
