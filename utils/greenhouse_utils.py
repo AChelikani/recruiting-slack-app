@@ -173,15 +173,20 @@ def get_earliest_interview_datetime(interviews):
     return date
 
 
-def get_first_onsite_interview_date_from_scheduled_interviews(
-    job_stage, interviews, timezone
-):
+# Get hyphen delimited datestring for onsite interviews.
+# Ex. 6-10-6-12 if the interviews are on 6-10 and 6-12.
+def get_onsite_date_string(job_stage, interviews, timezone):
+    dates = set([])
     onsite_interviews = get_onsite_interviews(job_stage, interviews)
-    date = get_earliest_interview_datetime(onsite_interviews)
+    for interview in onsite_interviews:
+        date = interview["start"]["date_time"]
+        _, month, day, _, _ = utils.parse_time(date, timezone)
+        dates.add((month, day))
 
-    _, month, day, _, _ = utils.parse_time(date, timezone)
+    dates = sorted(dates)
+    dates = list(map(lambda x: "{}-{}".format(x[0], x[1]), dates))
 
-    return "{}-{}".format(month, day)
+    return "-".join(dates)
 
 
 def get_formatted_candidate_contact(candidate):

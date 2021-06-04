@@ -205,13 +205,11 @@ class ApplicationWatcher:
         onsite_interview_ids = interview_id_to_interview_kit_id.keys()
 
         # Create new onsite channel for candidate.
-        interview_date = (
-            ghutils.get_first_onsite_interview_date_from_scheduled_interviews(
-                job_stage, interviews, self.config.default_timezone
-            )
+        interview_dates_string = ghutils.get_onsite_date_string(
+            job_stage, interviews, self.config.default_timezone
         )
         channel_name = slackutils.generate_new_onsite_channel_name(
-            candidate["first_name"], candidate["last_name"], interview_date
+            candidate["first_name"], candidate["last_name"], interview_dates_string
         )
         channel_id = self.slack_client.create_private_channel(channel_name)
         print("Channel created... Channel Name: {}".format(channel_name))
