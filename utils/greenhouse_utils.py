@@ -349,12 +349,16 @@ def panel_with_emails(panel_without_emails, user_id_to_email_map):
     return panel
 
 
-def is_job_excluded(job, exclude_jobs):
+# Exclude any jobs that have substrings from exclude_jobs, unless those substrings are in include_jobs.
+def is_job_excluded(job, exclude_jobs, include_jobs):
     if len(exclude_jobs) == 0:
         return False
 
-    for job_substring in exclude_jobs:
-        if job_substring in job["name"]:
+    for exclude_job_substring in exclude_jobs:
+        if exclude_job_substring in job["name"]:
+            for include_job_substring in include_jobs:
+                if include_job_substring in job["name"]:
+                    return False
             return True
 
     return False

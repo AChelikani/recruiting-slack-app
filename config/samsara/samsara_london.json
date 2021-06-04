@@ -10,5 +10,6 @@
     "debugEmails": ["angela.fong@samsara.com"],
     "includeRecruiter": true,
     "excludeJobs": ["VP", "Director", "Manager"],
+    "includeJobs": ["Product Manager"],
     "minInterviewsForChannel": 2
 }

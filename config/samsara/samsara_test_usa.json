@@ -10,5 +10,6 @@
     "debugEmails": ["advith.chelikani@gmail.com", "robert.km.eng@gmail.com"],
     "includeRecruiter": true,
     "excludeJobs": ["VP", "Director", "Manager"],
+    "includeJobs": ["Product Manager"],
     "minInterviewsForChannel": 2
 }

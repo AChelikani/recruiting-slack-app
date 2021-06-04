@@ -50,6 +50,10 @@ class Config:
         # JSON: excludeJobs (array of string)
         self.exclude_jobs = []
 
+        # Job title substrings that should be included, regardless if they are in exclude_jobs.
+        # JSON: includeJobs (array of string)
+        self.include_jobs = []
+
         # Minimum number of interviews in an onsite to create a channel.
         # JSON: minInterviewsForChannel (number)
         self.min_interviews_for_channel = 1
@@ -86,6 +90,9 @@ class Config:
 
     def set_exclude_jobs(self, exclude_jobs):
         self.exclude_jobs = exclude_jobs
+
+    def set_include_jobs(self, include_jobs):
+        self.include_jobs = include_jobs
 
     def set_min_interviews_for_channel(self, min_interviews_for_channel):
         self.min_interviews_for_channel = min_interviews_for_channel
@@ -130,6 +137,9 @@ def parse_config(json):
 
     if "excludeJobs" in json:
         config.set_exclude_jobs(json["excludeJobs"])
+
+    if "includeJobs" in json:
+        config.set_include_jobs(json["includeJobs"])
 
     if "minInterviewsForChannel" in json:
         config.set_min_interviews_for_channel(json["minInterviewsForChannel"])

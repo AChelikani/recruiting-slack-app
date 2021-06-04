@@ -114,7 +114,9 @@ class ApplicationWatcher:
                 jobs.extend(dept_office_jobs)
 
         for job in jobs:
-            if ghutils.is_job_excluded(job, self.config.exclude_jobs):
+            if ghutils.is_job_excluded(
+                job, self.config.exclude_jobs, self.config.include_jobs
+            ):
                 continue
             job_id_to_job[job["id"]] = job
 
