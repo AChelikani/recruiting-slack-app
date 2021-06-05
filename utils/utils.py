@@ -14,6 +14,7 @@ def human_readable_time(year, month, day):
         human_date += "rd"
     else:
         human_date += "th"
+    return human_date
 
 
 def parse_time(time_str, timezone):
