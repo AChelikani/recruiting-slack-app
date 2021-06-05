@@ -3,6 +3,19 @@ from datetime import datetime
 import time
 
 
+def human_readable_time(year, month, day):
+    date = datetime(year, month, day)
+    human_date = date.strftime("%A, %B %-d")
+    if day % 10 == 1:
+        human_date += "st"
+    elif day % 10 == 2:
+        human_date += "nd"
+    elif day % 10 == 3:
+        human_date += "rd"
+    else:
+        human_date += "th"
+
+
 def parse_time(time_str, timezone):
     """
     Parse an RFC 3339 style time string into year, month, day, hour, minute.

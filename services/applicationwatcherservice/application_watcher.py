@@ -394,6 +394,7 @@ class ApplicationWatcher:
         )
 
         interview_counter = 1
+        last_day = None
         for interview in interviews:
             if not interview["interview"]:
                 continue
@@ -418,9 +419,23 @@ class ApplicationWatcher:
             interview_name = interview["interview"]["name"]
             start_time = interview["start"]["date_time"]
             end_time = interview["end"]["date_time"]
-            _, month, day, _, _ = utils.parse_time(
+            year, month, day, _, _ = utils.parse_time(
                 start_time, self.config.default_timezone
             )
+
+            if last_day != (month, day):
+                # Add day header.
+                last_day = (month, day)
+                date_header_block = {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*{}*".format(
+                            utils.human_readable_time(year, month, day)
+                        ),
+                    },
+                }
+                blocks.append(date_header_block)
 
             interview_kit_id = interview_id_to_interview_kit_id[
                 interview["interview"]["id"]
@@ -432,9 +447,7 @@ class ApplicationWatcher:
                 application["id"],
             )
 
-            display_time = "*{}/{}* {}-{}".format(
-                month,
-                day,
+            display_time = "{}-{}".format(
                 utils.format_time(start_time, self.config.default_timezone),
                 utils.format_time(end_time, self.config.default_timezone),
             )
