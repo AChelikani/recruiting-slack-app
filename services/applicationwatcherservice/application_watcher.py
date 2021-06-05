@@ -432,7 +432,7 @@ class ApplicationWatcher:
                 application["id"],
             )
 
-            display_time = "{}/{} {}-{}".format(
+            display_time = "*{}/{}* {}-{}".format(
                 month,
                 day,
                 utils.format_time(start_time, self.config.default_timezone),
