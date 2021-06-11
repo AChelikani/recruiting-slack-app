@@ -5,7 +5,7 @@
     "defaultTimezone": "US/Pacific",
     "slackToken": "SLACK_BOT_TOKEN_TEST",
     "greenhouseToken": "GREENHOUSE_API_TOKEN_SAMSARA",
-    "departments": ["Software Engineering", "Product Design", "Product", "Big Data and Machine Learning"],
+    "departments": ["Software Engineering", "Product Design", "Product", "Big Data and Machine Learning", "Hardware and Firmware Engineering"],
     "offices": ["Atlanta", "Bay Area, Atlanta, or Remote - US/Canada", "San Jose", "San Francisco"],
     "debugEmails": ["advith.chelikani@gmail.com", "robert.km.eng@gmail.com"],
     "includeRecruiter": true,
