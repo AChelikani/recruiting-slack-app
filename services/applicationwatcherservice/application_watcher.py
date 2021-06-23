@@ -211,7 +211,18 @@ class ApplicationWatcher:
         channel_name = slackutils.generate_new_onsite_channel_name(
             candidate["first_name"], candidate["last_name"], interview_dates_string
         )
-        channel_id = self.slack_client.create_private_channel(channel_name)
+
+        # If org is in Enterprise Grid, share channel with other relevant workspaces.
+        if self.config.workspace_ids:
+            channel_id = self.slack_client.create_private_channel_in_workspace(
+                channel_name, self.config.workspace_ids[0]
+            )
+            self.slack_client.set_teams(
+                channel_id, self.config.workspace_ids[0], self.config.workspace_ids[1:]
+            )
+        else:
+            channel_id = self.slack_client.create_private_channel(channel_name)
+
         print("Channel created... Channel Name: {}".format(channel_name))
 
         # Invite: recruiter, recruiting coordinator, interviewers, and hiring managers.

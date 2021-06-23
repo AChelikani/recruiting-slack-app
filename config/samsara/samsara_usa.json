@@ -7,7 +7,7 @@
     "greenhouseToken": "GREENHOUSE_API_TOKEN_SAMSARA",
     "departments": ["Software Engineering", "Product Design", "Product", "Big Data and Machine Learning", "Hardware and Firmware Engineering"],
     "offices": ["Atlanta", "Bay Area, Atlanta, or Remote - US/Canada", "San Jose", "San Francisco"],
-    "debugEmails": ["angela.fong@samsara.com"],
+    "debugEmails": ["angela.fong@samsara.com", "advith.chelikani@samsara.com"],
     "includeRecruiter": true,
     "excludeJobs": ["VP", "Director", "Manager"],
     "includeJobs": ["Product Manager"],

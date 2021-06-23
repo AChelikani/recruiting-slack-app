@@ -14,6 +14,16 @@ class SlackClient:
             print(e.response["error"])
             return None
 
+    def create_private_channel_in_workspace(self, name, workspace_id):
+        try:
+            resp = self.slack_client.conversations_create(
+                name=name, is_private=True, team_id=workspace_id
+            )
+            return resp["channel"]["id"]
+        except SlackApiError as e:
+            print(e.response["error"])
+            return None
+
     def post_message_to_channel(self, channel, blocks, fallback_text):
         try:
             resp = self.slack_client.chat_postMessage(
@@ -35,6 +45,15 @@ class SlackClient:
         try:
             resp = self.slack_client.users_lookupByEmail(email=email)
             return resp["user"]["id"]
+        except SlackApiError as e:
+            print(e.response["error"])
+            return None
+
+    def set_teams(self, channel_id, team_id, target_team_ids):
+        try:
+            self.slack_client.admin_conversations_setTeams(
+                channel_id=channel_id, team_id=team_id, target_team_ids=target_team_ids
+            )
         except SlackApiError as e:
             print(e.response["error"])
             return None

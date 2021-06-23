@@ -58,6 +58,10 @@ class Config:
         # JSON: minInterviewsForChannel (number)
         self.min_interviews_for_channel = 1
 
+        # Workspace IDs for org-wide installed apps in Enterprise Grid. First ID is the workspace in which the channel is originally created.
+        # JSON: workspaceIds (array of string)
+        self.workspace_ids = []
+
     def set_name(self, name):
         self.name = name
 
@@ -96,6 +100,9 @@ class Config:
 
     def set_min_interviews_for_channel(self, min_interviews_for_channel):
         self.min_interviews_for_channel = min_interviews_for_channel
+
+    def set_workspace_ids(self, workspace_ids):
+        self.workspace_ids = workspace_ids
 
 
 def parse_config(json):
@@ -143,5 +150,8 @@ def parse_config(json):
 
     if "minInterviewsForChannel" in json:
         config.set_min_interviews_for_channel(json["minInterviewsForChannel"])
+
+    if "workspaceIds" in json:
+        config.set_workspace_ids(json["workspaceIds"])
 
     return config
