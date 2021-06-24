@@ -100,7 +100,7 @@ def home():
         "users:read",
         "users:read.email",
     ]
-    user_scopes = ["admin.conversations:write"]
+    user_scopes = ",".join(["admin.conversations:write"])
     scopes = ",".join(scopes)
     client_id = os.environ["SLACK_BOT_CLIENT_ID"]
     return render_template(

@@ -117,6 +117,11 @@ class GreenhouseClient:
 
         return r.json()
 
+    def get_all_scheduled_interviews(self, starts_after, ends_before):
+        extra_payload = {"starts_after": starts_after, "ends_before": ends_before}
+        url = "{}/scheduled_interviews".format(self.base_url)
+        return self._get_paginated_items(url, payload=extra_payload)
+
     def get_candidate(self, id):
         url = "{}/candidates/{}".format(self.base_url, id)
         r = requests.get(url, auth=(self.token, ""))
