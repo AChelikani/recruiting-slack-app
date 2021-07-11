@@ -30,6 +30,10 @@ class Config:
         # JSON: slackToken (string)
         self.slack_token = ""
 
+        # Slack bot admin API token.
+        # JSON: adminSlackToken (string)
+        self.admin_slack_token = ""
+
         # Departments for which the bot is enabled.
         # JSON: departments (array of strings)
         self.departments = []
@@ -80,6 +84,9 @@ class Config:
     def set_slack_token(self, slack_token):
         self.slack_token = slack_token
 
+    def set_admin_slack_token(self, admin_slack_token):
+        self.admin_slack_token = admin_slack_token
+
     def set_departments(self, departments):
         self.departments = departments
 
@@ -129,6 +136,10 @@ def parse_config(json):
     if "slackToken" in json:
         # NOTE: Value in config JSON is env variable key.
         config.set_slack_token(os.environ[json["slackToken"]])
+
+    if "adminSlackToken" in json:
+        # NOTE: Value in config JSON is env variable key.
+        config.set_admin_slack_token(os.environ[json["adminSlackToken"]])
 
     if "departments" in json:
         config.set_departments(json["departments"])

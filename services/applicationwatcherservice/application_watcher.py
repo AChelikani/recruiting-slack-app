@@ -56,6 +56,9 @@ class ApplicationWatcher:
         self.config = config
         self.gh_client = GreenhouseClient(config.greenhouse_token)
         self.slack_client = SlackClient(config.slack_token)
+        self.admin_slack_client = None
+        if config.admin_slack_token:
+            self.admin_slack_client = SlackClient(config.admin_slack_token)
 
     def _generate_gh_user_id_to_email_map(self):
         """
@@ -217,8 +220,10 @@ class ApplicationWatcher:
             channel_id = self.slack_client.create_private_channel_in_workspace(
                 channel_name, self.config.workspace_ids[0]
             )
-            self.slack_client.set_teams(
-                channel_id, self.config.workspace_ids[0], self.config.workspace_ids[1:]
+
+            # admin.conversations.setTeams call needs to be made using user token.
+            self.admin_slack_client.set_teams(
+                channel_id, self.config.workspace_ids[0], self.config.workspace_ids
             )
         else:
             channel_id = self.slack_client.create_private_channel(channel_name)
