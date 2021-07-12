@@ -220,11 +220,6 @@ class ApplicationWatcher:
             channel_id = self.slack_client.create_private_channel_in_workspace(
                 channel_name, self.config.workspace_ids[0]
             )
-
-            # admin.conversations.setTeams call needs to be made using user token.
-            self.admin_slack_client.set_teams(
-                channel_id, self.config.workspace_ids[0], self.config.workspace_ids
-            )
         else:
             channel_id = self.slack_client.create_private_channel(channel_name)
 
@@ -285,6 +280,15 @@ class ApplicationWatcher:
         self.slack_client.post_message_to_channel(
             channel_id, blocks, "Unable to post schedule message."
         )
+
+        time.sleep(1)
+
+        if self.config.workspace_ids:
+            # admin.conversations.setTeams call needs to be made using user token.
+            self.admin_slack_client.set_teams(
+                channel_id, self.config.workspace_ids[0], self.config.workspace_ids
+            )
+
         print("Schedule posted...\n")
         return
 
