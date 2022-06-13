@@ -5,7 +5,7 @@ from config.config import parse_config
 import json
 import boto3
 
-BUCKET = "olive-configs"
+BUCKET = "olive-app-configs"
 
 
 def lambda_handler(event, context):
